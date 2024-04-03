@@ -10,7 +10,7 @@ class MainNavigationNameRoute {
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.login;
+  final String initialRoute = MainNavigationNameRoute.home;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),

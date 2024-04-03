@@ -44,6 +44,7 @@ class _BodyWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 46),
+        //TODO: Username
         _EmailFormWidget(),
         SizedBox(height: 20),
         _PasswordFormWidget(),
