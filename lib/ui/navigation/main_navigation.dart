@@ -4,15 +4,17 @@ import 'package:flutter/material.dart';
 class MainNavigationNameRoute {
   static const loader = '/';
   static const home = '/home';
+  static const signup = '/signup';
 }
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.loader;
+  final String initialRoute = MainNavigationNameRoute.signup;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
     MainNavigationNameRoute.home: (_) => _screenFactory.makeHome(),
+    MainNavigationNameRoute.signup: (_) => _screenFactory.makeSignup(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {

@@ -2,6 +2,8 @@ import 'package:books_bart/ui/widgets/home/home_view_model.dart';
 import 'package:books_bart/ui/widgets/home/home_widget.dart';
 import 'package:books_bart/ui/widgets/loader/loader_view_model.dart';
 import 'package:books_bart/ui/widgets/loader/loader_widget.dart';
+import 'package:books_bart/ui/widgets/signup/signup_view_model.dart';
+import 'package:books_bart/ui/widgets/signup/signup_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,13 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => HomeViewModel(context),
       child: const HomeWidget(),
+    );
+  }
+
+  Widget makeSignup() {
+    return ChangeNotifierProvider(
+      create: (context) => SignupViewModel(context),
+      child: const SignUpWidget(),
     );
   }
 }
