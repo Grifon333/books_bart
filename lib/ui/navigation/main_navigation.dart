@@ -7,11 +7,12 @@ class MainNavigationNameRoute {
   static const signup = '/signup';
   static const login = '/login';
   static const favoriteBooks = '/home/favorite_books';
+  static const settings = '/settings';
 }
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.favoriteBooks;
+  final String initialRoute = MainNavigationNameRoute.settings;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
@@ -20,6 +21,7 @@ class MainNavigation {
     MainNavigationNameRoute.login: (_) => _screenFactory.makeLogin(),
     MainNavigationNameRoute.favoriteBooks: (_) =>
         _screenFactory.makeFavoriteBooks(),
+    MainNavigationNameRoute.settings: (_) => _screenFactory.makeSettings(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {

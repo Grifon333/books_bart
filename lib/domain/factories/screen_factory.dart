@@ -6,6 +6,8 @@ import 'package:books_bart/ui/widgets/loader/loader_view_model.dart';
 import 'package:books_bart/ui/widgets/loader/loader_widget.dart';
 import 'package:books_bart/ui/widgets/login/login_view_model.dart';
 import 'package:books_bart/ui/widgets/login/login_widget.dart';
+import 'package:books_bart/ui/widgets/settings/settings_view_model.dart';
+import 'package:books_bart/ui/widgets/settings/settings_widget.dart';
 import 'package:books_bart/ui/widgets/signup/signup_view_model.dart';
 import 'package:books_bart/ui/widgets/signup/signup_widget.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +46,13 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => FavoriteBooksViewModel(context),
       child: const FavoriteBooksWidget(),
+    );
+  }
+
+  Widget makeSettings() {
+    return ChangeNotifierProvider(
+      create: (context) => SettingsViewModel(context),
+      child: const SettingsWidget(),
     );
   }
 }
