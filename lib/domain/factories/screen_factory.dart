@@ -1,3 +1,5 @@
+import 'package:books_bart/ui/widgets/book_details/book_details_view_model.dart';
+import 'package:books_bart/ui/widgets/book_details/book_details_widget.dart';
 import 'package:books_bart/ui/widgets/favorite_books/favorite_books_view_model.dart';
 import 'package:books_bart/ui/widgets/favorite_books/favorite_books_widget.dart';
 import 'package:books_bart/ui/widgets/home/home_view_model.dart';
@@ -53,6 +55,13 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => SettingsViewModel(context),
       child: const SettingsWidget(),
+    );
+  }
+
+  Widget makeBookDetails() {
+    return ChangeNotifierProvider(
+      create: (context) => BookDetailsViewModel(context),
+      child: const BookDetailsWidget(),
     );
   }
 }
