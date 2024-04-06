@@ -119,7 +119,6 @@ class _AccountInfoTileWidget extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final color = const Color(0xFFF5EEE5);
 
   const _AccountInfoTileWidget({
     required this.icon,
@@ -127,44 +126,40 @@ class _AccountInfoTileWidget extends StatelessWidget {
     required this.subtitle,
   });
 
+  void onPressed() {
+    debugPrint('Account: $title');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint('Account: $title');
-      },
+    return FilledButton(
+      onPressed: onPressed,
+      style: const ButtonStyle(
+        minimumSize: MaterialStatePropertyAll(Size(0, 0)),
+      ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: color,
-          ),
+          Icon(icon),
           const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
-                  color: color,
                 ),
               ),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color,
-                ),
+                style: const TextStyle(fontSize: 12),
               ),
             ],
           ),
           const Spacer(),
-          Icon(
-            Icons.chevron_right,
-            color: color,
-          ),
+          const Icon(Icons.chevron_right),
         ],
       ),
     );
@@ -239,39 +234,36 @@ class _SettingMenuWidget extends StatelessWidget {
 class _SettingItemWidget extends StatelessWidget {
   final IconData icon;
   final String title;
-  final color = const Color(0xFFF5EEE5);
 
   const _SettingItemWidget({
     required this.icon,
     required this.title,
   });
 
+  void onPressed() {
+    debugPrint('Settings: $title');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint('Settings: $title');
-      },
+    return FilledButton(
+      onPressed: onPressed,
+      style: const ButtonStyle(
+        minimumSize: MaterialStatePropertyAll(Size(0, 0)),
+      ),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: color,
-          ),
+          Icon(icon),
           const SizedBox(width: 16),
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
-              color: color,
               fontWeight: FontWeight.w600,
             ),
           ),
           const Spacer(),
-          Icon(
-            Icons.chevron_right,
-            color: color,
-          ),
+          const Icon(Icons.chevron_right),
         ],
       ),
     );

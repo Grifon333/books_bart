@@ -64,13 +64,14 @@ class _BodyWidget extends StatelessWidget {
 class _EmailFormWidget extends StatelessWidget {
   const _EmailFormWidget();
 
+  void onChanged(String value) => debugPrint('Email address: $value');
+
   @override
   Widget build(BuildContext context) {
-    return const TextField(
-      decoration: InputDecoration(
+    return TextField(
+      onChanged: onChanged,
+      decoration: const InputDecoration(
         labelText: 'Email address',
-        isCollapsed: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
@@ -82,17 +83,34 @@ class _EmailFormWidget extends StatelessWidget {
 class _PasswordFormWidget extends StatelessWidget {
   const _PasswordFormWidget();
 
+  void onChanged(String value) => debugPrint('Password: $value');
+
+  void onTap() => debugPrint('Visibility password');
+
   @override
   Widget build(BuildContext context) {
-    return const TextField(
+    return TextField(
+      onChanged: onChanged,
       obscureText: true,
       obscuringCharacter: '*',
       decoration: InputDecoration(
         labelText: 'Password',
-        isCollapsed: true,
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        // suffix: Icon(Icons.visibility),
-        border: OutlineInputBorder(
+        suffixIconConstraints: const BoxConstraints(
+          minHeight: 0,
+          minWidth: 0,
+        ),
+        suffixIcon: InkWell(
+          onTap: onTap,
+          radius: 0,
+          child: const Padding(
+            padding: EdgeInsets.only(right: 16),
+            child: Icon(
+              Icons.visibility,
+              size: 24,
+            ),
+          ),
+        ),
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
@@ -103,23 +121,15 @@ class _PasswordFormWidget extends StatelessWidget {
 class _ButtonWidget extends StatelessWidget {
   const _ButtonWidget();
 
+  void onPressed() => debugPrint('Log in');
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: const ButtonStyle(
-          minimumSize: MaterialStatePropertyAll(Size(0, 50)),
-          shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          )),
-          backgroundColor: MaterialStatePropertyAll(Color(0xFF7E675E)),
-        ),
-        child: const Text(
-          'Log in',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
+      child: FilledButton(
+        onPressed: onPressed,
+        child: const Text('Log in'),
       ),
     );
   }
@@ -156,24 +166,19 @@ class _SubtextForButtonWidget extends StatelessWidget {
 class _DividerWidget extends StatelessWidget {
   const _DividerWidget();
 
-  final Widget horizontalDivider = const SizedBox(
-    height: 0.5,
-    child: ColoredBox(color: Colors.black54),
-  );
-
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        Expanded(child: horizontalDivider),
-        const Padding(
+        Expanded(child: Divider()),
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
             style: TextStyle(color: Colors.black54),
           ),
         ),
-        Expanded(child: horizontalDivider),
+        Expanded(child: Divider()),
       ],
     );
   }
@@ -182,36 +187,18 @@ class _DividerWidget extends StatelessWidget {
 class _SignupWithGoogleButtonWidget extends StatelessWidget {
   const _SignupWithGoogleButtonWidget();
 
+  void onPressed() => debugPrint('Log in with Google');
+
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {},
-      style: ButtonStyle(
-        minimumSize: const MaterialStatePropertyAll(Size(double.infinity, 50)),
-        shadowColor: const MaterialStatePropertyAll(Colors.transparent),
-        backgroundColor: const MaterialStatePropertyAll(Colors.white),
-        // surfaceTintColor: const MaterialStatePropertyAll(Colors.transparent),
-        shape: MaterialStatePropertyAll(
-          RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: const BorderSide(color: Color(0xFF7E675E))),
-        ),
-      ),
+    return OutlinedButton(
+      onPressed: onPressed,
       child: const Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.language,
-            color: Color(0xFF7E675E),
-          ),
+          Icon(Icons.language),
           SizedBox(width: 10),
-          Text(
-            'Log in with Google',
-            style: TextStyle(
-              color: Color(0xFF7E675E),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text('Log in with Google'),
         ],
       ),
     );

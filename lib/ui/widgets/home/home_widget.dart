@@ -1,3 +1,4 @@
+import 'package:books_bart/ui/widgets/home/home_view_model.dart';
 import 'package:flutter/material.dart';
 
 class HomeWidget extends StatelessWidget {
@@ -8,25 +9,25 @@ class HomeWidget extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () {
-            debugPrint('Menu');
-          },
-          icon: const Icon(Icons.menu),
+          onPressed: () => debugPrint('Menu'),
+          icon: const Icon(
+            Icons.menu,
+            size: 30,
+          ),
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              debugPrint('Notifications');
-            },
-            icon: const Icon(Icons.notifications),
+            onPressed: () => debugPrint('Notifications'),
+            icon: const Icon(
+              Icons.notifications,
+              size: 30,
+            ),
           ),
         ],
       ),
-      body: const SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: _BodyWidget(),
-        ),
+      body: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: _BodyWidget(),
       ),
     );
   }
@@ -56,9 +57,10 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Hello John!\nWhich book do you want to buy?',
-      style: TextStyle(
+    String name = 'John';
+    return Text(
+      'Hello $name!\nWhich book do you want to buy?',
+      style: const TextStyle(
         fontSize: 24,
         color: Color(0xFF7E675E),
         fontWeight: FontWeight.w600,
@@ -69,6 +71,10 @@ class _TitleWidget extends StatelessWidget {
 
 class _SearchWidget extends StatelessWidget {
   const _SearchWidget();
+
+  void onChanged(String value) => debugPrint(value);
+
+  void onPressed() => debugPrint('Filter');
 
   @override
   Widget build(BuildContext context) {
@@ -85,28 +91,18 @@ class _SearchWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: TextField(
-              decoration: InputDecoration(
+              onChanged: onChanged,
+              decoration: const InputDecoration(
                 border: InputBorder.none,
-                isCollapsed: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: Color(0xFF7E675E),
-                ),
+                prefixIcon: Icon(Icons.search, size: 24),
               ),
             ),
           ),
           IconButton(
-            onPressed: () {
-              debugPrint('Filter');
-            },
+            onPressed: onPressed,
             icon: const Icon(Icons.filter_alt),
-            color: const Color(0xFF7E675E),
           ),
         ],
       ),
@@ -119,16 +115,18 @@ class _GenreListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const List<String> genresList = [
+    final List<String> genresList = [
       'All',
       'eBooks',
       'New',
       'Bestseller',
-      'Audiobooks'
+      'Audiobooks',
+      'Fantasy',
     ];
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           for (int i = 0; i < genresList.length; i++)
             Padding(
@@ -146,32 +144,23 @@ class _GenreTileWidget extends StatelessWidget {
 
   const _GenreTileWidget(this.title);
 
+  void onPressed() {
+    debugPrint('Group: $title');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint('Select genre: $title');
-      },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: const Color(0xFF7E675E),
-          ),
-          borderRadius: BorderRadius.circular(10),
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: const ButtonStyle(
+        minimumSize: MaterialStatePropertyAll(Size(0, 0)),
+        padding: MaterialStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 6,
-          ),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF7E675E),
-            ),
-          ),
-        ),
+      ),
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }
@@ -182,15 +171,19 @@ class _ListBookGroupsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<String> groupsTitle = [
+      'Popular',
+      'Fiction',
+      'Health',
+      'Finance',
+    ];
     return Expanded(
-      child: ListView(
-        children: const [
-          _ListBooksInGroupWidget('Popular'),
-          SizedBox(height: 16),
-          _ListBooksInGroupWidget('Fiction'),
-          SizedBox(height: 16),
-          _ListBooksInGroupWidget('Health'),
-        ],
+      child: ListView.separated(
+        itemBuilder: (BuildContext context, int index) =>
+            _ListBooksInGroupWidget(groupsTitle[index]),
+        separatorBuilder: (BuildContext context, int index) =>
+            const SizedBox(height: 16),
+        itemCount: groupsTitle.length,
       ),
     );
   }
@@ -201,8 +194,19 @@ class _ListBooksInGroupWidget extends StatelessWidget {
 
   const _ListBooksInGroupWidget(this.groupName);
 
+  void onPressed() {
+    debugPrint('See all: $groupName');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final List<BookInfo> booksInfo = [
+      BookInfo(title: 'Book1', author: 'Author1'),
+      BookInfo(title: 'Book2', author: 'Author2'),
+      BookInfo(title: 'Book3', author: 'Author3'),
+      BookInfo(title: 'Book4', author: 'Author4'),
+      BookInfo(title: 'Book5', author: 'Author5'),
+    ];
     return Column(
       children: [
         Row(
@@ -211,41 +215,28 @@ class _ListBooksInGroupWidget extends StatelessWidget {
             Text(
               groupName,
               style: const TextStyle(
-                  color: Color(0xFF7E675E),
-                  fontSize: 24,
-                  fontWeight: FontWeight.w700),
+                color: Color(0xFF7E675E),
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             TextButton(
-              onPressed: () {
-                debugPrint('See all: $groupName');
-              },
-              child: const Text(
-                'See all ->',
-                style: TextStyle(
-                  color: Color(0xFF7E675E),
-                  fontSize: 16,
-                ),
-              ),
+              onPressed: onPressed,
+              child: const Text('See all ->'),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        const SingleChildScrollView(
+        SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _BookTileWidget('Book title', 'Author'),
-              SizedBox(width: 16),
-              _BookTileWidget('Book title', 'Author'),
-              SizedBox(width: 16),
-              _BookTileWidget('Book title tttttttttttabcdefghij', 'Author'),
-              SizedBox(width: 16),
-              _BookTileWidget('Book title', 'Author'),
-              SizedBox(width: 16),
-              _BookTileWidget('Book title', 'Author'),
-              SizedBox(width: 16),
-              _BookTileWidget('Book title', 'Author'),
+              for (int i = 0; i < booksInfo.length; i++)
+                Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: _BookTileWidget(booksInfo[i]),
+                ),
             ],
           ),
         ),
@@ -255,46 +246,55 @@ class _ListBooksInGroupWidget extends StatelessWidget {
 }
 
 class _BookTileWidget extends StatelessWidget {
-  final String _title;
-  final String _author;
+  final BookInfo _bookInfo;
 
   const _BookTileWidget(
-    this._title,
-    this._author,
+    this._bookInfo,
   );
+
+  void onTap() {
+    debugPrint('Title: ${_bookInfo.title}, author: ${_bookInfo.author}');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 104,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 160,
-            width: 104,
-            child: ColoredBox(color: Colors.grey),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _title,
-            maxLines: 2,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF7E675E),
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        width: 104,
+        child: Column(
+          children: [
+            // Image.network(
+            //   _bookInfo.imageUrl,
+            //   fit: BoxFit.fitWidth,
+            // ),
+            const SizedBox(
+              height: 160,
+              width: 104,
+              child: ColoredBox(color: Colors.grey),
             ),
-          ),
-          Text(
-            _author,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFFF06267),
+            const SizedBox(height: 4),
+            Text(
+              _bookInfo.title,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF7E675E),
+              ),
             ),
-          )
-        ],
+            Text(
+              _bookInfo.author,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFFF06267),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

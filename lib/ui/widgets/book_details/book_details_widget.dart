@@ -38,25 +38,9 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return CustomScrollView(
-    //   slivers: [
-    //     SliverPadding(
-    //       padding: EdgeInsets.zero,
-    //       sliver: SliverList(
-    //         delegate: SliverChildListDelegate(
-    //           [
-    //             const _BookCoverWidget(),
-    //             const _BookInfoWidget(),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       child: ListView(
-        // shrinkWrap: true,
         children: const [
           _BookCoverWidget(),
           _BookInfoWidget(),
@@ -147,11 +131,13 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Psychology of Money',
-      style: TextStyle(
-        fontSize: 18,
+    final String title = 'Psychology of Money';
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 20,
         fontWeight: FontWeight.w700,
+        color: Color(0xFF7E675E),
       ),
     );
   }
@@ -162,11 +148,12 @@ class _AuthorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Morgan Housel',
-      style: TextStyle(
+    final String author = 'Morgan Housel';
+    return Text(
+      author,
+      style: const TextStyle(
         fontSize: 14,
-        color: Colors.grey,
+        color: Color(0xFFF06267),
       ),
     );
   }
@@ -175,13 +162,27 @@ class _AuthorWidget extends StatelessWidget {
 class _AdditionInfoWidget extends StatelessWidget {
   const _AdditionInfoWidget();
 
-  final divider = const VerticalDivider(
-    width: 1,
-    color: Colors.grey,
-  );
+  List<Widget> listWidget(List<List<String>> additionalInfoList) {
+    List<Widget> list = [];
+    for (int i = 0; i < additionalInfoList.length; i++) {
+      list.add(
+        _AdditionInfoTileWidget(
+          title: additionalInfoList[i].first,
+          value: additionalInfoList[i].last,
+        ),
+      );
+      if (i < additionalInfoList.length - 1) list.add(const VerticalDivider());
+    }
+    return list;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<List<String>> additionalInfoList = [
+      ['Rating', '4.5'],
+      ['Pages', '200'],
+      ['Language', 'EN'],
+    ];
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -197,22 +198,7 @@ class _AdditionInfoWidget extends StatelessWidget {
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              const _AdditionInfoTileWidget(
-                title: 'Rating',
-                value: '4.5',
-              ),
-              divider,
-              const _AdditionInfoTileWidget(
-                title: 'Pages',
-                value: '200',
-              ),
-              divider,
-              const _AdditionInfoTileWidget(
-                title: 'Language',
-                value: 'EN',
-              ),
-            ],
+            children: listWidget(additionalInfoList),
           ),
         ),
       ),
@@ -255,22 +241,14 @@ class _AdditionInfoTileWidget extends StatelessWidget {
 class _SaveButtonWidget extends StatelessWidget {
   const _SaveButtonWidget();
 
+  void onPressed() => debugPrint('Save');
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint('Save');
-      },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xFF7E675E),
-          borderRadius: BorderRadius.circular(27),
-        ),
-        child: const Icon(
-          Icons.bookmark_outline,
-          color: Colors.white,
-        ),
-      ),
+    return FilledButton(
+      onPressed: onPressed,
+      style: const ButtonStyle(shape: MaterialStatePropertyAll(CircleBorder())),
+      child: const Icon(Icons.bookmark_outline),
     );
   }
 }
@@ -280,15 +258,14 @@ class _DescriptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final String description =
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dignissim tellus ut tincidunt interdum egestas. Et, tempus pellentesque tellus vulputate dignissim.Massa est, in quam tempus. Mattis bibendum sit mattis dapibus viverra';
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Description'),
-        SizedBox(height: 8),
-        Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dignissim tellus ut tincidunt interdum egestas. Et, tempus pellentesque tellus vulputate dignissim.Massa est, in quam tempus. Mattis bibendum sit mattis dapibus viverra'),
-        Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dignissim tellus ut tincidunt interdum egestas. Et, tempus pellentesque tellus vulputate dignissim.Massa est, in quam tempus. Mattis bibendum sit mattis dapibus viverra'),
+        const Text('Description'),
+        const SizedBox(height: 8),
+        Text(description),
       ],
     );
   }
@@ -312,7 +289,9 @@ class _ActionButtonsWidget extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-              child: _ButtonWidget(title: 'Buy e-book'),
+              child: _ButtonWidget(
+                title: 'Buy e-book',
+              ), // If book is bought -> 'Go to Library' and change background color
             ),
           ],
         ),
@@ -328,29 +307,13 @@ class _ButtonWidget extends StatelessWidget {
     required this.title,
   });
 
+  void onPressed() => debugPrint('Button: $title');
+
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        debugPrint('Button: $title');
-      },
-      style: ButtonStyle(
-        backgroundColor: const MaterialStatePropertyAll(
-          Color(0xFF7E675E),
-        ),
-        shape: MaterialStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-        ),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 16,
-        ),
-      ),
+    return FilledButton(
+      onPressed: onPressed,
+      child: Text(title),
     );
   }
 }
