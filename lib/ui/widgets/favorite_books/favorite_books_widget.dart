@@ -8,9 +8,11 @@ class FavoriteBooksWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: Color(0xFFF5EEE5),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: _BodyWidget(),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: _BodyWidget(),
+        ),
       ),
     );
   }

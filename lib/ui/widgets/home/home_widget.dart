@@ -7,9 +7,12 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: _BodyWidget(),
+      body: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: _BodyWidget(),
+        ),
       ),
     );
   }
@@ -22,6 +25,7 @@ class _BodyWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
+        SizedBox(height: 48),
         _TitleWidget(),
         SizedBox(height: 24),
         _SearchWidget(),

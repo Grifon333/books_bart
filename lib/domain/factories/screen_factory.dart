@@ -12,6 +12,8 @@ import 'package:books_bart/ui/widgets/login/login_view_model.dart';
 import 'package:books_bart/ui/widgets/login/login_widget.dart';
 import 'package:books_bart/ui/widgets/settings/settings_view_model.dart';
 import 'package:books_bart/ui/widgets/settings/settings_widget.dart';
+import 'package:books_bart/ui/widgets/sidebar/side_bar_view_model.dart';
+import 'package:books_bart/ui/widgets/sidebar/side_bar_widget.dart';
 import 'package:books_bart/ui/widgets/signup/signup_view_model.dart';
 import 'package:books_bart/ui/widgets/signup/signup_widget.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +73,13 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => BottomNavigationBarViewModel(context),
       child: const BottomNavigationBarWidget(),
+    );
+  }
+
+  Widget makeSideBar() {
+    return ChangeNotifierProvider(
+      create: (context) => SideBarViewModel(context),
+      child: const SideBarWidget(),
     );
   }
 }
