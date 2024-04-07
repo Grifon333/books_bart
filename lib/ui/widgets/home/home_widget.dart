@@ -6,26 +6,8 @@ class HomeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => debugPrint('Menu'),
-          icon: const Icon(
-            Icons.menu,
-            size: 30,
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => debugPrint('Notifications'),
-            icon: const Icon(
-              Icons.notifications,
-              size: 30,
-            ),
-          ),
-        ],
-      ),
-      body: const Padding(
+    return const Scaffold(
+      body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: _BodyWidget(),
       ),

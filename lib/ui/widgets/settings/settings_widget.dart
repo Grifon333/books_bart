@@ -5,26 +5,9 @@ class SettingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5EEE5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF5EEE5),
-        leading: IconButton(
-          onPressed: () {
-            debugPrint('Menu');
-          },
-          icon: const Icon(Icons.menu),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              debugPrint('Notifications');
-            },
-            icon: const Icon(Icons.notifications),
-          ),
-        ],
-      ),
-      body: const SafeArea(
+    return const Scaffold(
+      backgroundColor: Color(0xFFF5EEE5),
+      body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: _BodyWidget(),

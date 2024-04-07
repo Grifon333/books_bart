@@ -71,6 +71,11 @@ class MainTheme {
   );
 
   static const _appBarTheme = AppBarTheme(
+    titleTextStyle: TextStyle(
+      fontSize: 24,
+      color: Color(0xFF7E675E),
+      fontWeight: FontWeight.w600,
+    ),
     iconTheme: IconThemeData(
       color: Color(0xFF7E675E),
     ),
@@ -98,6 +103,6 @@ class MainTheme {
 }
 
 /* disabledColor, focusColor, scaffoldBackgroundColor, fontFamily, textTheme,
-actionIconTheme, appBarTheme, bottomNavigationBarTheme, cardTheme, checkboxTheme,
-dialogTheme, dropdownMenuTheme, iconButtonTheme, listTileTheme, progressIndicatorTheme,
+actionIconTheme, bottomNavigationBarTheme, cardTheme, checkboxTheme, dialogTheme,
+dropdownMenuTheme, listTileTheme, progressIndicatorTheme,
 */

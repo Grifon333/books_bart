@@ -9,11 +9,12 @@ class MainNavigationNameRoute {
   static const favoriteBooks = '/favorite_books';
   static const settings = '/settings';
   static const bookDetails = '/home/book_details';
+  static const bottomNavigationBar = '/bottom_navigation_bar';
 }
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.bookDetails;
+  final String initialRoute = MainNavigationNameRoute.bottomNavigationBar;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
@@ -25,6 +26,8 @@ class MainNavigation {
     MainNavigationNameRoute.settings: (_) => _screenFactory.makeSettings(),
     MainNavigationNameRoute.bookDetails: (_) =>
         _screenFactory.makeBookDetails(),
+    MainNavigationNameRoute.bottomNavigationBar: (_) =>
+        _screenFactory.makeBottomNavigationBar(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
