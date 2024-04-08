@@ -9,6 +9,7 @@ class FavoriteBooksWidget extends StatelessWidget {
     return const Scaffold(
       backgroundColor: Color(0xFFF5EEE5),
       body: SafeArea(
+        bottom: false,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: _BodyWidget(),

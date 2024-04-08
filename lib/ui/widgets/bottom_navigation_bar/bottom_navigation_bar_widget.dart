@@ -87,7 +87,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
                     children: [
                       _screenFactory.makeHome(),
                       _screenFactory.makeFavoriteBooks(),
-                      const Center(child: Text('Cart')),
+                      _screenFactory.makeCart(),
                       _screenFactory.makeSettings(),
                     ],
                   ),
