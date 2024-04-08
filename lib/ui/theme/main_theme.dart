@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const color1 = Color(0xFF7E675E);
+const color2 = Color(0xFFF5EEE5);
+
 class MainTheme {
   final themeData = ThemeData(
     colorScheme: _colorScheme,
@@ -12,10 +15,11 @@ class MainTheme {
     iconTheme: _iconTheme,
     textButtonTheme: _textButtonTheme,
     iconButtonTheme: _iconButtonTheme,
+    elevatedButtonTheme: _elevatedButtonTheme,
   );
 
   static const _colorScheme = ColorScheme.light(
-    primary: Color(0xFF7E675E),
+    primary: color1,
   );
 
   static const _filledButtonTheme = FilledButtonThemeData(
@@ -29,10 +33,10 @@ class MainTheme {
       overlayColor: MaterialStatePropertyAll(Colors.transparent),
       padding: MaterialStatePropertyAll(EdgeInsets.zero),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      iconColor: MaterialStatePropertyAll(Color(0xFFF5EEE5)),
+      iconColor: MaterialStatePropertyAll(color2),
       textStyle: MaterialStatePropertyAll(
         TextStyle(
-          color: Color(0xFFF5EEE5),
+          color: color2,
           fontSize: 16,
         ),
       ),
@@ -48,13 +52,7 @@ class MainTheme {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
-      side: MaterialStatePropertyAll(BorderSide(color: Color(0xFF7E675E))),
-      // textStyle: MaterialStatePropertyAll(
-      //   TextStyle(
-      //     color: Colors.white,
-      //     fontWeight: FontWeight.w600,
-      //   ),
-      // ),
+      side: MaterialStatePropertyAll(BorderSide(color: color1)),
     ),
   );
 
@@ -73,16 +71,16 @@ class MainTheme {
   static const _appBarTheme = AppBarTheme(
     titleTextStyle: TextStyle(
       fontSize: 24,
-      color: Color(0xFF7E675E),
+      color: color1,
       fontWeight: FontWeight.w600,
     ),
     iconTheme: IconThemeData(
-      color: Color(0xFF7E675E),
+      color: color1,
     ),
   );
 
   static const _iconTheme = IconThemeData(
-    color: Color(0xFF7E675E),
+    color: color1,
   );
 
   static const _textButtonTheme = TextButtonThemeData(
@@ -90,16 +88,37 @@ class MainTheme {
       textStyle: MaterialStatePropertyAll(
         TextStyle(
           fontSize: 16,
-          color: Color(0xFF7E675E),
+          color: color1,
         ),
       ),
     ),
   );
 
   static const _iconButtonTheme = IconButtonThemeData(
-      style: ButtonStyle(
-    iconColor: MaterialStatePropertyAll(Color(0xFF7E675E)),
-  ));
+    style: ButtonStyle(
+      iconColor: MaterialStatePropertyAll(color1),
+    ),
+  );
+
+  static const _elevatedButtonTheme = ElevatedButtonThemeData(
+    style: ButtonStyle(
+      minimumSize: MaterialStatePropertyAll(Size(0, 50)),
+      shape: MaterialStatePropertyAll(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+      backgroundColor: MaterialStatePropertyAll(color1),
+      padding: MaterialStatePropertyAll(EdgeInsets.zero),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      textStyle: MaterialStatePropertyAll(
+        TextStyle(
+          color: Colors.white,
+          fontSize: 16,
+        ),
+      ),
+    ),
+  );
 }
 
 /* disabledColor, focusColor, scaffoldBackgroundColor, fontFamily, textTheme,

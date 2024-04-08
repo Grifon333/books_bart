@@ -12,6 +12,7 @@ class MainNavigationNameRoute {
   static const bottomNavigationBar = '/bottom_navigation_bar';
   static const sideBar = '/home/side_bar';
   static const cart = '/cart';
+  static const order = '/cart/order';
 }
 
 class MainNavigation {
@@ -32,6 +33,7 @@ class MainNavigation {
         _screenFactory.makeBottomNavigationBar(),
     MainNavigationNameRoute.sideBar: (_) => _screenFactory.makeSideBar(),
     MainNavigationNameRoute.cart: (_) => _screenFactory.makeCart(),
+    MainNavigationNameRoute.order: (_) => _screenFactory.makeOrder(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
