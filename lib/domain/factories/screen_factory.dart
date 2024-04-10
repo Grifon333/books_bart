@@ -27,6 +27,7 @@ class ScreenFactory {
   Widget makeLoader() {
     return Provider(
       create: (context) => LoaderViewModel(context),
+      lazy: false,
       child: const LoaderWidget(),
     );
   }

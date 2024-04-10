@@ -17,7 +17,7 @@ class MainNavigationNameRoute {
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.bottomNavigationBar;
+  final String initialRoute = MainNavigationNameRoute.loader;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
