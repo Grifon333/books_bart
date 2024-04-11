@@ -1,5 +1,7 @@
+import 'package:books_bart/ui/widgets/login/login_view_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginWidget extends StatelessWidget {
   const LoginWidget({super.key});
@@ -44,10 +46,10 @@ class _BodyWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 46),
-        //TODO: Username
         _EmailFormWidget(),
-        SizedBox(height: 20),
+        SizedBox(height: 16),
         _PasswordFormWidget(),
+        _ErrorWidget(),
         SizedBox(height: 16),
         _ButtonWidget(),
         SizedBox(height: 16),
@@ -64,12 +66,10 @@ class _BodyWidget extends StatelessWidget {
 class _EmailFormWidget extends StatelessWidget {
   const _EmailFormWidget();
 
-  void onChanged(String value) => debugPrint('Email address: $value');
-
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onChanged: onChanged,
+      onChanged: context.read<LoginViewModel>().onChangeEmail,
       decoration: const InputDecoration(
         labelText: 'Email address',
         border: OutlineInputBorder(
@@ -83,14 +83,12 @@ class _EmailFormWidget extends StatelessWidget {
 class _PasswordFormWidget extends StatelessWidget {
   const _PasswordFormWidget();
 
-  void onChanged(String value) => debugPrint('Password: $value');
-
   void onTap() => debugPrint('Visibility password');
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      onChanged: onChanged,
+      onChanged: context.read<LoginViewModel>().onChangePassword,
       obscureText: true,
       obscuringCharacter: '*',
       decoration: InputDecoration(
@@ -121,14 +119,13 @@ class _PasswordFormWidget extends StatelessWidget {
 class _ButtonWidget extends StatelessWidget {
   const _ButtonWidget();
 
-  void onPressed() => debugPrint('Log in');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<LoginViewModel>();
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
-        onPressed: onPressed,
+        onPressed: model.onPressedLogin,
         child: const Text('Log in'),
       ),
     );
@@ -200,6 +197,32 @@ class _SignupWithGoogleButtonWidget extends StatelessWidget {
           SizedBox(width: 10),
           Text('Log in with Google'),
         ],
+      ),
+    );
+  }
+}
+
+class _ErrorWidget extends StatelessWidget {
+  const _ErrorWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final errorMassage =
+        context.select((LoginViewModel vm) => vm.state.errorMassage);
+    if (errorMassage == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: Text(
+          errorMassage,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

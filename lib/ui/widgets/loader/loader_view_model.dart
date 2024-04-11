@@ -16,8 +16,9 @@ class LoaderViewModel {
 
   Future<void> _checkAuth() async {
     final isAuth = await _authRepository.isAuth();
-    final route =
-    isAuth ? MainNavigationNameRoute.login : MainNavigationNameRoute.signup;
+    final route = isAuth
+        ? MainNavigationNameRoute.bottomNavigationBar
+        : MainNavigationNameRoute.login;
     if (!context.mounted) return;
     Navigator.of(context).pushReplacementNamed(route);
   }

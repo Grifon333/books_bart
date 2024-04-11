@@ -17,7 +17,7 @@ class MainNavigationNameRoute {
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.loader;
+  final String initialRoute = MainNavigationNameRoute.bottomNavigationBar;
 
   final Map<String, WidgetBuilder> routes = {
     MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
@@ -47,5 +47,10 @@ class MainNavigation {
           ),
         );
     }
+  }
+
+  void goToMainScreen(BuildContext context) {
+    Navigator.of(context)
+        .pushReplacementNamed(MainNavigationNameRoute.bottomNavigationBar);
   }
 }
