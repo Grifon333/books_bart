@@ -53,4 +53,8 @@ class MainNavigation {
     Navigator.of(context)
         .pushReplacementNamed(MainNavigationNameRoute.bottomNavigationBar);
   }
+
+  void goToSignupScreen(BuildContext context) {
+    Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.signup);
+  }
 }

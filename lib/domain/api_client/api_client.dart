@@ -1,6 +1,7 @@
 import 'package:books_bart/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 enum ApiClientExceptionType { firebaseAuth, other }
 
@@ -40,7 +41,9 @@ class ApiClient {
       return userCredential?.user;
     } on FirebaseAuthException catch (e) {
       const type = ApiClientExceptionType.firebaseAuth;
-      if (e.code == 'user-not-found') {
+      if (e.code == 'invalid-email') {
+        throw ApiClientException('The email address is badly formatted.', type);
+      } else if (e.code == 'user-not-found') {
         throw ApiClientException('No user found for that email.', type);
       } else if (e.code == 'wrong-password') {
         throw ApiClientException(
@@ -50,6 +53,26 @@ class ApiClient {
       } else {
         throw ApiClientException('Error with server. Try late.', type);
       }
+    } catch (e) {
+      throw ApiClientException(e.toString(), ApiClientExceptionType.other);
+    }
+  }
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      final userCredential =
+          await _firebaseAuth?.signInWithCredential(credential);
+      return userCredential?.user;
+    } on FirebaseAuthException {
+      const type = ApiClientExceptionType.firebaseAuth;
+      throw ApiClientException('Error with server. Try late.', type);
     } catch (e) {
       throw ApiClientException(e.toString(), ApiClientExceptionType.other);
     }

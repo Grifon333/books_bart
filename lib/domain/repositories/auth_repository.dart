@@ -35,6 +35,27 @@ class AuthRepository {
     }
   }
 
+  Future<void> loginWithGoogle() async {
+    try {
+      final userFromStorage = await _apiClient.signInWithGoogle();
+      if (userFromStorage != null) {
+        final userData = User(
+          uid: userFromStorage.uid,
+          name: userFromStorage.displayName,
+          email: userFromStorage.email,
+          phoneNumber: userFromStorage.phoneNumber,
+        );
+        await _userDataProvider.setUserData(userData);
+      }
+    } on ApiClientException catch (e) {
+      if (e.type == ApiClientExceptionType.firebaseAuth) {
+        rethrow;
+      } else {
+        debugPrint('ApiClientException: ${e.massage}');
+      }
+    }
+  }
+
   Future<void> signup(String email, String password) async {
     try {
       final userFromStorage = await _apiClient.createUserWithEmailAndPassword(

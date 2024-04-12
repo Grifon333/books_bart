@@ -68,13 +68,18 @@ class _EmailFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<LoginViewModel>();
+    final errorMassage = context.select(
+      (LoginViewModel vm) => vm.state.errorEmailMassage,
+    );
     return TextField(
-      onChanged: context.read<LoginViewModel>().onChangeEmail,
-      decoration: const InputDecoration(
+      onChanged: model.onChangeEmail,
+      decoration: InputDecoration(
         labelText: 'Email address',
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
+        errorText: errorMassage,
       ),
     );
   }
@@ -83,13 +88,22 @@ class _EmailFormWidget extends StatelessWidget {
 class _PasswordFormWidget extends StatelessWidget {
   const _PasswordFormWidget();
 
-  void onTap() => debugPrint('Visibility password');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<LoginViewModel>();
+    final errorMassage = context.select(
+      (LoginViewModel vm) => vm.state.errorPasswordMassage,
+    );
+    final isObscureText = context.select(
+      (LoginViewModel vm) => !vm.state.isVisibilityPassword,
+    );
+    final iconVisibility = isObscureText
+        ? const Icon(Icons.visibility_off, size: 24)
+        : const Icon(Icons.visibility, size: 24);
+
     return TextField(
-      onChanged: context.read<LoginViewModel>().onChangePassword,
-      obscureText: true,
+      onChanged: model.onChangePassword,
+      obscureText: isObscureText,
       obscuringCharacter: '*',
       decoration: InputDecoration(
         labelText: 'Password',
@@ -98,19 +112,17 @@ class _PasswordFormWidget extends StatelessWidget {
           minWidth: 0,
         ),
         suffixIcon: InkWell(
-          onTap: onTap,
+          onTap: model.onChangeVisibilityPassword,
           radius: 0,
-          child: const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(
-              Icons.visibility,
-              size: 24,
-            ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: iconVisibility,
           ),
         ),
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
+        errorText: errorMassage,
       ),
     );
   }
@@ -137,6 +149,7 @@ class _SubtextForButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<LoginViewModel>();
     return SizedBox(
       width: double.infinity,
       child: RichText(
@@ -151,7 +164,7 @@ class _SubtextForButtonWidget extends StatelessWidget {
               text: 'Sign up',
               style: const TextStyle(color: Color(0xFFF06267)),
               recognizer: TapGestureRecognizer()
-                ..onTap = () => debugPrint('Don\'t have an account'),
+                ..onTap = () => model.onTapSignup(),
             ),
           ],
         ),
@@ -184,12 +197,11 @@ class _DividerWidget extends StatelessWidget {
 class _SignupWithGoogleButtonWidget extends StatelessWidget {
   const _SignupWithGoogleButtonWidget();
 
-  void onPressed() => debugPrint('Log in with Google');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<LoginViewModel>();
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: model.onPressedLoginWithGoogle,
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
