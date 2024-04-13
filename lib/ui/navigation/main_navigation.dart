@@ -57,4 +57,8 @@ class MainNavigation {
   void goToSignupScreen(BuildContext context) {
     Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.signup);
   }
+
+  void goToLoginScreen(BuildContext context) {
+    Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.login);
+  }
 }

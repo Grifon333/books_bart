@@ -1,5 +1,7 @@
+import 'package:books_bart/ui/widgets/signup/signup_view_model.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignUpWidget extends StatelessWidget {
   const SignUpWidget({super.key});
@@ -44,11 +46,14 @@ class _BodyWidget extends StatelessWidget {
           ),
         ),
         SizedBox(height: 46),
+        _NicknameFormWidget(),
+        SizedBox(height: 16),
         _EmailFormWidget(),
-        SizedBox(height: 20),
+        SizedBox(height: 16),
         _PasswordFormWidget(),
         SizedBox(height: 16),
         _ButtonWidget(),
+        _ErrorWidget(),
         SizedBox(height: 16),
         _SubtextForButtonWidget(),
         SizedBox(height: 36),
@@ -60,15 +65,32 @@ class _BodyWidget extends StatelessWidget {
   }
 }
 
-class _EmailFormWidget extends StatelessWidget {
-  const _EmailFormWidget();
-
-  void onChanged(String value) => debugPrint('Email address: $value');
+class _NicknameFormWidget extends StatelessWidget {
+  const _NicknameFormWidget();
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
     return TextField(
-      onChanged: onChanged,
+      onChanged: model.onChangedNickname,
+      decoration: const InputDecoration(
+        labelText: 'Nickname',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmailFormWidget extends StatelessWidget {
+  const _EmailFormWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
+    return TextField(
+      onChanged: model.onChangedEmail,
       decoration: const InputDecoration(
         labelText: 'Email address',
         border: OutlineInputBorder(
@@ -82,15 +104,20 @@ class _EmailFormWidget extends StatelessWidget {
 class _PasswordFormWidget extends StatelessWidget {
   const _PasswordFormWidget();
 
-  void onChanged(String value) => debugPrint('Password: $value');
-
-  void onTap() => debugPrint('Visibility password');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
+    final isObscureText = context.select(
+      (SignupViewModel vm) => vm.state.isObscureText,
+    );
+    final iconVisibility = Icon(
+      isObscureText ? Icons.visibility_off : Icons.visibility,
+      size: 24,
+    );
+
     return TextField(
-      onChanged: onChanged,
-      obscureText: true,
+      onChanged: model.onChangedPassword,
+      obscureText: isObscureText,
       obscuringCharacter: '*',
       decoration: InputDecoration(
         labelText: 'Password',
@@ -99,14 +126,11 @@ class _PasswordFormWidget extends StatelessWidget {
           minWidth: 0,
         ),
         suffixIcon: InkWell(
-          onTap: onTap,
+          onTap: model.onChangeVisibilityPassword,
           radius: 0,
-          child: const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(
-              Icons.visibility,
-              size: 24,
-            ),
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: iconVisibility,
           ),
         ),
         border: const OutlineInputBorder(
@@ -120,14 +144,13 @@ class _PasswordFormWidget extends StatelessWidget {
 class _ButtonWidget extends StatelessWidget {
   const _ButtonWidget();
 
-  void onPressed() => debugPrint('Create new account');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
-        onPressed: onPressed,
+        onPressed: model.onSignup,
         child: const Text('Create new account'),
       ),
     );
@@ -139,6 +162,7 @@ class _SubtextForButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
     return SizedBox(
       width: double.infinity,
       child: RichText(
@@ -152,8 +176,7 @@ class _SubtextForButtonWidget extends StatelessWidget {
             TextSpan(
               text: 'Login',
               style: const TextStyle(color: Color(0xFFF06267)),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () => debugPrint('Already have an account'),
+              recognizer: TapGestureRecognizer()..onTap = model.goToLoginScreen,
             ),
           ],
         ),
@@ -186,12 +209,11 @@ class _DividerWidget extends StatelessWidget {
 class _SignupWithGoogleButtonWidget extends StatelessWidget {
   const _SignupWithGoogleButtonWidget();
 
-  void onPressed() => debugPrint('Sign up with Google');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<SignupViewModel>();
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: model.onSignupWithGoogle,
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -199,6 +221,32 @@ class _SignupWithGoogleButtonWidget extends StatelessWidget {
           SizedBox(width: 10),
           Text('Sign up with Google'),
         ],
+      ),
+    );
+  }
+}
+
+class _ErrorWidget extends StatelessWidget {
+  const _ErrorWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final errorMassage =
+        context.select((SignupViewModel vm) => vm.state.errorMassage);
+    if (errorMassage == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: SizedBox(
+        width: double.infinity,
+        child: Text(
+          errorMassage,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.red,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

@@ -9,7 +9,8 @@ class LoginState {
   String? errorMassage;
   String? errorEmailMassage;
   String? errorPasswordMassage;
-  bool isVisibilityPassword = false;
+  bool isObscureText = true;
+  bool isProgress = false;
 
   LoginState({
     required this.email,
@@ -28,32 +29,41 @@ class LoginViewModel extends ChangeNotifier {
   LoginState get state => _state;
 
   Future<void> onPressedLogin() async {
+    if (_state.isProgress) return;
+    _state.isProgress = true;
+    _state.errorMassage = null;
+    notifyListeners();
     try {
-      _state.errorMassage = null;
-      notifyListeners();
-      if (!_checkFields()) return;
+      if (!_checkFields()) {
+        _state.isProgress = false;
+        return;
+      }
       await _authRepository.login(_state.email, _state.password);
       _goToMainScreen();
     } on ApiClientException catch (e) {
       _state.errorMassage = e.massage;
+      _state.isProgress = false;
       notifyListeners();
     }
   }
 
   Future<void> onPressedLoginWithGoogle() async {
+    if (_state.isProgress) return;
+    _state.isProgress = true;
+    _state.errorMassage = null;
+    notifyListeners();
     try {
-      _state.errorMassage = null;
-      notifyListeners();
       await _authRepository.loginWithGoogle();
       _goToMainScreen();
     } on ApiClientException catch(e) {
       _state.errorMassage = e.massage;
+      _state.isProgress = false;
       notifyListeners();
     }
   }
 
   void onChangeVisibilityPassword() {
-    _state.isVisibilityPassword ^= true;
+    _state.isObscureText ^= true;
     notifyListeners();
   }
 
@@ -77,7 +87,7 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onTapSignup() {
+  void goToSignupScreen() {
     _mainNavigation.goToSignupScreen(context);
   }
 

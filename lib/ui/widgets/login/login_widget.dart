@@ -49,9 +49,9 @@ class _BodyWidget extends StatelessWidget {
         _EmailFormWidget(),
         SizedBox(height: 16),
         _PasswordFormWidget(),
-        _ErrorWidget(),
         SizedBox(height: 16),
         _ButtonWidget(),
+        _ErrorWidget(),
         SizedBox(height: 16),
         _SubtextForButtonWidget(),
         SizedBox(height: 36),
@@ -95,11 +95,12 @@ class _PasswordFormWidget extends StatelessWidget {
       (LoginViewModel vm) => vm.state.errorPasswordMassage,
     );
     final isObscureText = context.select(
-      (LoginViewModel vm) => !vm.state.isVisibilityPassword,
+      (LoginViewModel vm) => vm.state.isObscureText,
     );
-    final iconVisibility = isObscureText
-        ? const Icon(Icons.visibility_off, size: 24)
-        : const Icon(Icons.visibility, size: 24);
+    final iconVisibility = Icon(
+      isObscureText ? Icons.visibility_off : Icons.visibility,
+      size: 24,
+    );
 
     return TextField(
       onChanged: model.onChangePassword,
@@ -164,7 +165,7 @@ class _SubtextForButtonWidget extends StatelessWidget {
               text: 'Sign up',
               style: const TextStyle(color: Color(0xFFF06267)),
               recognizer: TapGestureRecognizer()
-                ..onTap = () => model.onTapSignup(),
+                ..onTap = () => model.goToSignupScreen(),
             ),
           ],
         ),

@@ -29,7 +29,7 @@ class ApiClient {
     _firebaseAuth = FirebaseAuth.instance;
   }
 
-  Future<User?> signInWithEmailAndPassword(
+  Future<UserCredential?> signInWithEmailAndPassword(
     String email,
     String password,
   ) async {
@@ -38,7 +38,7 @@ class ApiClient {
         email: email,
         password: password,
       );
-      return userCredential?.user;
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       const type = ApiClientExceptionType.firebaseAuth;
       if (e.code == 'invalid-email') {
@@ -58,7 +58,7 @@ class ApiClient {
     }
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
@@ -69,7 +69,7 @@ class ApiClient {
       );
       final userCredential =
           await _firebaseAuth?.signInWithCredential(credential);
-      return userCredential?.user;
+      return userCredential;
     } on FirebaseAuthException {
       const type = ApiClientExceptionType.firebaseAuth;
       throw ApiClientException('Error with server. Try late.', type);
@@ -78,7 +78,7 @@ class ApiClient {
     }
   }
 
-  Future<User?> createUserWithEmailAndPassword(
+  Future<UserCredential?> createUserWithEmailAndPassword(
     String email,
     String password,
   ) async {
@@ -88,7 +88,7 @@ class ApiClient {
         email: email,
         password: password,
       );
-      return userCredential?.user;
+      return userCredential;
     } on FirebaseAuthException catch (e) {
       const type = ApiClientExceptionType.firebaseAuth;
       if (e.code == 'weak-password') {
@@ -110,5 +110,9 @@ class ApiClient {
 
   Future<void> sendEmailVerification(User? user) async {
     await user?.sendEmailVerification();
+  }
+
+  Future<void> updateDisplayName(String nickname) async {
+    await _firebaseAuth?.currentUser?.updateDisplayName(nickname);
   }
 }

@@ -13,16 +13,18 @@ class AuthRepository {
 
   Future<void> login(String email, String password) async {
     try {
-      final userFromStorage = await _apiClient.signInWithEmailAndPassword(
+      final userCredential = await _apiClient.signInWithEmailAndPassword(
         email,
         password,
       );
-      if (userFromStorage != null) {
+      if (userCredential != null && userCredential.user != null &&
+          userCredential.credential != null) {
         final userData = User(
-          uid: userFromStorage.uid,
-          name: userFromStorage.displayName,
-          email: userFromStorage.email,
-          phoneNumber: userFromStorage.phoneNumber,
+          uid: userCredential.user!.uid,
+          name: userCredential.user!.displayName,
+          email: email,
+          phoneNumber: userCredential.user!.phoneNumber,
+          sighInMethod: userCredential.credential!.signInMethod,
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -37,13 +39,14 @@ class AuthRepository {
 
   Future<void> loginWithGoogle() async {
     try {
-      final userFromStorage = await _apiClient.signInWithGoogle();
-      if (userFromStorage != null) {
+      final userCredential = await _apiClient.signInWithGoogle();
+      if (userCredential != null && userCredential.user != null) {
         final userData = User(
-          uid: userFromStorage.uid,
-          name: userFromStorage.displayName,
-          email: userFromStorage.email,
-          phoneNumber: userFromStorage.phoneNumber,
+          uid: userCredential.user!.uid,
+          name: userCredential.user!.displayName,
+          email: userCredential.user!.email ?? 'no-email',
+          phoneNumber: userCredential.user!.phoneNumber,
+          sighInMethod: 'google.com',
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -56,18 +59,22 @@ class AuthRepository {
     }
   }
 
-  Future<void> signup(String email, String password) async {
+  Future<void> signup(String nickname,
+      String email,
+      String password,) async {
     try {
-      final userFromStorage = await _apiClient.createUserWithEmailAndPassword(
+      final userCredential = await _apiClient.createUserWithEmailAndPassword(
         email,
         password,
       );
-      if (userFromStorage != null) {
+      await _apiClient.updateDisplayName(nickname);
+      if (userCredential != null && userCredential.user != null) {
         final userData = User(
-          uid: userFromStorage.uid,
-          name: userFromStorage.displayName,
-          email: userFromStorage.email,
-          phoneNumber: userFromStorage.phoneNumber,
+          uid: userCredential.user!.uid,
+          name: nickname,
+          email: email,
+          phoneNumber: userCredential.user!.phoneNumber,
+          sighInMethod: 'password',
         );
         await _userDataProvider.setUserData(userData);
       }
