@@ -14,6 +14,8 @@ import 'package:books_bart/ui/widgets/login/login_view_model.dart';
 import 'package:books_bart/ui/widgets/login/login_widget.dart';
 import 'package:books_bart/ui/widgets/order/order_view_model.dart';
 import 'package:books_bart/ui/widgets/order/order_widget.dart';
+import 'package:books_bart/ui/widgets/profile/profile_view_model.dart';
+import 'package:books_bart/ui/widgets/profile/profile_widget.dart';
 import 'package:books_bart/ui/widgets/settings/settings_view_model.dart';
 import 'package:books_bart/ui/widgets/settings/settings_widget.dart';
 import 'package:books_bart/ui/widgets/sidebar/side_bar_view_model.dart';
@@ -99,6 +101,13 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => OrderViewModel(context),
       child: const OrderWidget(),
+    );
+  }
+
+  Widget makeProfile() {
+    return ChangeNotifierProvider(
+      create: (context) => ProfileViewModel(context),
+      child: const ProfileWidget(),
     );
   }
 }

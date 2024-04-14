@@ -1,7 +1,5 @@
 import 'dart:math';
-
 import 'package:books_bart/domain/factories/screen_factory.dart';
-import 'package:books_bart/ui/widgets/sidebar/side_bar_widget.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationBarWidget extends StatefulWidget {
@@ -69,7 +67,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
             width: 288,
             left: _isOpenSideBar ? 0 : -288,
             height: MediaQuery.of(context).size.height,
-            child: const SideBarWidget(),
+            child: _screenFactory.makeSideBar(),
           ),
           Transform(
             alignment: Alignment.center,
@@ -182,7 +180,6 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
                     onTap: () {
                       if (index == selectIndex) return;
                       selectIndex = index;
-                      debugPrint('Tap $index');
                       model?.updateSelectIndex(index);
                       setState(() {});
                     },

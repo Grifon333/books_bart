@@ -115,4 +115,32 @@ class ApiClient {
   Future<void> updateDisplayName(String nickname) async {
     await _firebaseAuth?.currentUser?.updateDisplayName(nickname);
   }
+
+  // Future<void> updatePassword(String password) async {
+  //   _firebaseAuth?.sendPasswordResetEmail(email: '');
+  //   await _firebaseAuth?.currentUser?.updatePassword(password);
+  // }
+
+  Future<void> updatePhoneNumber(String phoneNumber) async {
+    await _firebaseAuth?.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: (credential) async {
+        await _firebaseAuth?.currentUser?.updatePhoneNumber(credential);
+      },
+      verificationFailed: (err) {},
+      codeSent: (verificationId, [forceResendingToken]) async {
+        String code = '123123';
+        final credential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: code,
+        );
+        await _firebaseAuth?.currentUser?.updatePhoneNumber(credential);
+      },
+      codeAutoRetrievalTimeout: (_) {},
+    );
+  }
+
+  Future<void> updatePhoto(String photoURL) async {
+    await _firebaseAuth?.currentUser?.updatePhotoURL(photoURL);
+  }
 }

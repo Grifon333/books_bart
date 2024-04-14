@@ -13,6 +13,7 @@ class MainNavigationNameRoute {
   static const sideBar = '/home/side_bar';
   static const cart = '/cart';
   static const order = '/cart/order';
+  static const profile = '/profile';
 }
 
 class MainNavigation {
@@ -34,6 +35,7 @@ class MainNavigation {
     MainNavigationNameRoute.sideBar: (_) => _screenFactory.makeSideBar(),
     MainNavigationNameRoute.cart: (_) => _screenFactory.makeCart(),
     MainNavigationNameRoute.order: (_) => _screenFactory.makeOrder(),
+    MainNavigationNameRoute.profile: (_) => _screenFactory.makeProfile(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -60,5 +62,9 @@ class MainNavigation {
 
   void goToLoginScreen(BuildContext context) {
     Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.login);
+  }
+
+  void goToProfileScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(MainNavigationNameRoute.profile);
   }
 }

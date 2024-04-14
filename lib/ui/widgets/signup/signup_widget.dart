@@ -73,12 +73,7 @@ class _NicknameFormWidget extends StatelessWidget {
     final model = context.read<SignupViewModel>();
     return TextField(
       onChanged: model.onChangedNickname,
-      decoration: const InputDecoration(
-        labelText: 'Nickname',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-      ),
+      decoration: const InputDecoration(labelText: 'Nickname'),
     );
   }
 }
@@ -91,12 +86,7 @@ class _EmailFormWidget extends StatelessWidget {
     final model = context.read<SignupViewModel>();
     return TextField(
       onChanged: model.onChangedEmail,
-      decoration: const InputDecoration(
-        labelText: 'Email address',
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-      ),
+      decoration: const InputDecoration(labelText: 'Email address'),
     );
   }
 }
@@ -132,9 +122,6 @@ class _PasswordFormWidget extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
             child: iconVisibility,
           ),
-        ),
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
     );

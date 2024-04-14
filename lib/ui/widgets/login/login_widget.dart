@@ -76,9 +76,6 @@ class _EmailFormWidget extends StatelessWidget {
       onChanged: model.onChangeEmail,
       decoration: InputDecoration(
         labelText: 'Email address',
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
         errorText: errorMassage,
       ),
     );
@@ -119,9 +116,6 @@ class _PasswordFormWidget extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16),
             child: iconVisibility,
           ),
-        ),
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
         errorText: errorMassage,
       ),

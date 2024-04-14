@@ -66,6 +66,9 @@ class MainTheme {
     isCollapsed: true,
     isDense: true,
     contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
   );
 
   static const _appBarTheme = AppBarTheme(

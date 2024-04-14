@@ -1,4 +1,6 @@
+import 'package:books_bart/ui/widgets/sidebar/side_bar_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SideBarWidget extends StatelessWidget {
   const SideBarWidget({super.key});
@@ -30,15 +32,17 @@ class _TitleCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const ListTile(
-      leading: CircleAvatar(
+    final model = context.read<SideBarViewModel>();
+    return ListTile(
+      onTap: model.onShowProfile,
+      leading: const CircleAvatar(
         backgroundColor: Colors.white24,
         child: Icon(
           Icons.person,
           color: Colors.white,
         ),
       ),
-      title: Text(
+      title: const Text(
         'John Wick',
         style: TextStyle(color: Colors.white),
       ),

@@ -25,6 +25,7 @@ class AuthRepository {
           email: email,
           phoneNumber: userCredential.user!.phoneNumber,
           sighInMethod: userCredential.credential!.signInMethod,
+          urlPhoto: userCredential.user!.photoURL,
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -47,6 +48,7 @@ class AuthRepository {
           email: userCredential.user!.email ?? 'no-email',
           phoneNumber: userCredential.user!.phoneNumber,
           sighInMethod: 'google.com',
+          urlPhoto: userCredential.user!.photoURL,
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -73,7 +75,6 @@ class AuthRepository {
           uid: userCredential.user!.uid,
           name: nickname,
           email: email,
-          phoneNumber: userCredential.user!.phoneNumber,
           sighInMethod: 'password',
         );
         await _userDataProvider.setUserData(userData);
