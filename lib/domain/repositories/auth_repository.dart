@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class AuthRepository {
   final _userDataProvider = UserDataProvider();
-  final _apiClient = ApiClient();
+  final _apiClient = ApiClient.instance;
 
   Future<bool> isAuth() async {
     return await _userDataProvider.getUserData() != null;
@@ -17,7 +17,8 @@ class AuthRepository {
         email,
         password,
       );
-      if (userCredential != null && userCredential.user != null &&
+      if (userCredential != null &&
+          userCredential.user != null &&
           userCredential.credential != null) {
         final userData = User(
           uid: userCredential.user!.uid,
@@ -29,12 +30,8 @@ class AuthRepository {
         );
         await _userDataProvider.setUserData(userData);
       }
-    } on ApiClientException catch (e) {
-      if (e.type == ApiClientExceptionType.firebaseAuth) {
-        rethrow;
-      } else {
-        debugPrint('ApiClientException: ${e.massage}');
-      }
+    } on ApiClientFirebaseAuthException catch (e) {
+      debugPrint('ApiClientException: $e');
     }
   }
 
@@ -52,18 +49,16 @@ class AuthRepository {
         );
         await _userDataProvider.setUserData(userData);
       }
-    } on ApiClientException catch (e) {
-      if (e.type == ApiClientExceptionType.firebaseAuth) {
-        rethrow;
-      } else {
-        debugPrint('ApiClientException: ${e.massage}');
-      }
+    } on ApiClientFirebaseAuthException catch (e) {
+      debugPrint('ApiClientException: $e');
     }
   }
 
-  Future<void> signup(String nickname,
-      String email,
-      String password,) async {
+  Future<void> signup(
+    String nickname,
+    String email,
+    String password,
+  ) async {
     try {
       final userCredential = await _apiClient.createUserWithEmailAndPassword(
         email,
@@ -79,12 +74,8 @@ class AuthRepository {
         );
         await _userDataProvider.setUserData(userData);
       }
-    } on ApiClientException catch (e) {
-      if (e.type == ApiClientExceptionType.firebaseAuth) {
-        rethrow;
-      } else {
-        debugPrint('ApiClientException: ${e.massage}');
-      }
+    } on ApiClientFirebaseAuthException catch (e) {
+      debugPrint('ApiClientException: $e');
     }
   }
 

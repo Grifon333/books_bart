@@ -71,7 +71,7 @@ class SignupViewModel extends ChangeNotifier {
       );
       _state.isProgress = false;
       _goToMainScreen();
-    } on ApiClientException catch (e) {
+    } on ApiClientFirebaseAuthException catch (e) {
       _state.errorMassage = e.massage;
       _state.isProgress = false;
       notifyListeners();
@@ -87,7 +87,7 @@ class SignupViewModel extends ChangeNotifier {
       await _authRepository.loginWithGoogle();
       _state.isProgress = false;
       _goToMainScreen();
-    } on ApiClientException catch (e) {
+    } on ApiClientFirebaseAuthException catch (e) {
       _state.errorMassage = e.massage;
       _state.isProgress = false;
       notifyListeners();

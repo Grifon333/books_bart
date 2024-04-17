@@ -4,7 +4,7 @@ import 'package:books_bart/domain/entity/user.dart';
 
 class UserRepository {
   final UserDataProvider _userDataProvider = UserDataProvider();
-  final ApiClient _apiClient = ApiClient();
+  final ApiClient _apiClient = ApiClient.instance;
 
   Future<User> getCurrentUserData() async {
     User? userData = await _userDataProvider.getUserData();

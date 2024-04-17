@@ -40,7 +40,7 @@ class LoginViewModel extends ChangeNotifier {
       }
       await _authRepository.login(_state.email, _state.password);
       _goToMainScreen();
-    } on ApiClientException catch (e) {
+    } on ApiClientFirebaseAuthException catch (e) {
       _state.errorMassage = e.massage;
       _state.isProgress = false;
       notifyListeners();
@@ -55,7 +55,7 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await _authRepository.loginWithGoogle();
       _goToMainScreen();
-    } on ApiClientException catch(e) {
+    } on ApiClientFirebaseAuthException catch(e) {
       _state.errorMassage = e.massage;
       _state.isProgress = false;
       notifyListeners();
