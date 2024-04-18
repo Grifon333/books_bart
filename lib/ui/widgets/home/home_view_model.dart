@@ -1,23 +1,54 @@
+import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:flutter/material.dart';
+
+class HomeState {
+  Map<String, List<BookInfo>> books = {};
+
+  HomeState();
+}
 
 class HomeViewModel extends ChangeNotifier {
   final BuildContext context;
+  final HomeState _state = HomeState();
+  final BookRepository _bookRepository = BookRepository();
 
-  HomeViewModel(this.context);
+  HomeViewModel(this.context) {
+    _init();
+  }
+
+  HomeState get state => _state;
+
+  Future<void> _init() async {
+    final books = await _bookRepository.getAllBooks();
+    Map<String, List<BookInfo>> booksByCategory = {};
+    for (Book book in books) {
+      String category = book.category;
+      String title = book.title;
+      String authors = book.authors;
+      final BookInfo bookInfo = BookInfo(title: title, authors: authors);
+      if (booksByCategory.containsKey(category)) {
+        booksByCategory[category]!.add(bookInfo);
+      } else {
+        booksByCategory.addAll({
+          category: [bookInfo]
+        });
+      }
+    }
+    _state.books = booksByCategory;
+    notifyListeners();
+  }
 }
 
 class BookInfo {
   String imageUrl;
   String title;
-  String author;
+  String authors;
 
   BookInfo({
     this.imageUrl =
-        '''https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.amazon.co.uk%2
-        FEmpty-Akshay-Gupta-ebook%2Fdp%2FB095VJKVWJ&psig=AOvVaw1Hjt4guj1Eus4puv
-        Olywuu&ust=1712387137095000&source=images&cd=vfe&opi=89978449&ved=0CBIQ
-        jRxqFwoTCMCJ07fBqoUDFQAAAAAdAAAAABAE''',
+        'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
     required this.title,
-    required this.author,
+    required this.authors,
   });
 }

@@ -1,5 +1,6 @@
 import 'package:books_bart/ui/widgets/home/home_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeWidget extends StatelessWidget {
   const HomeWidget({super.key});
@@ -157,12 +158,9 @@ class _ListBookGroupsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> groupsTitle = [
-      'Popular',
-      'Fiction',
-      'Health',
-      'Finance',
-    ];
+    final List<String> groupsTitle = context.select(
+      (HomeViewModel vm) => vm.state.books.keys.toList(),
+    );
     return Expanded(
       child: ListView.separated(
         itemBuilder: (BuildContext context, int index) =>
@@ -186,13 +184,8 @@ class _ListBooksInGroupWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<BookInfo> booksInfo = [
-      BookInfo(title: 'Book1', author: 'Author1'),
-      BookInfo(title: 'Book2', author: 'Author2'),
-      BookInfo(title: 'Book3', author: 'Author3'),
-      BookInfo(title: 'Book4', author: 'Author4'),
-      BookInfo(title: 'Book5', author: 'Author5'),
-    ];
+    final List<BookInfo> booksInfo =
+        context.read<HomeViewModel>().state.books[groupName] ?? [];
     return Column(
       children: [
         Row(
@@ -239,7 +232,7 @@ class _BookTileWidget extends StatelessWidget {
   );
 
   void onTap() {
-    debugPrint('Title: ${_bookInfo.title}, author: ${_bookInfo.author}');
+    debugPrint('Title: ${_bookInfo.title}, author: ${_bookInfo.authors}');
   }
 
   @override
@@ -250,14 +243,13 @@ class _BookTileWidget extends StatelessWidget {
         width: 104,
         child: Column(
           children: [
-            // Image.network(
-            //   _bookInfo.imageUrl,
-            //   fit: BoxFit.fitWidth,
-            // ),
-            const SizedBox(
-              height: 160,
+            SizedBox(
               width: 104,
-              child: ColoredBox(color: Colors.grey),
+              height: 160,
+              child: Image.network(
+                _bookInfo.imageUrl,
+                fit: BoxFit.fitWidth,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -271,7 +263,7 @@ class _BookTileWidget extends StatelessWidget {
               ),
             ),
             Text(
-              _bookInfo.author,
+              _bookInfo.authors,
               maxLines: 1,
               textAlign: TextAlign.center,
               style: const TextStyle(

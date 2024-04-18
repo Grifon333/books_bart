@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Book {
+  final String title;
   final String authors;
   final int countPage;
   final String description;
   final String category;
   final Map<String, int> rating;
-
-  // final List<String>? reviews;
-  // final List<Map<String, dynamic>> variants;
 
   static const Map<String, int> _emptyRating = {
     '1': 0,
@@ -19,6 +17,7 @@ class Book {
   };
 
   Book({
+    required this.title,
     required this.authors,
     required this.countPage,
     required this.description,
@@ -36,6 +35,7 @@ class Book {
         : _emptyRating;
 
     return Book(
+      title: data?['title'],
       authors: data?['authors'],
       countPage: data?['count_page'],
       description: data?['description'],
@@ -46,6 +46,7 @@ class Book {
 
   Map<String, dynamic> toFirestore() {
     return {
+      'title': title,
       'authors': authors,
       'count_page': countPage,
       'description': description,
@@ -57,6 +58,7 @@ class Book {
   @override
   String toString() {
     return 'Book {\n'
+        'title: $title\n'
         'authors: $authors,\n'
         'countPage: $countPage,\n'
         'description: $description,\n'
