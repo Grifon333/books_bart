@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ApiClientFirebaseAuthException implements Exception {
   final String massage;
@@ -19,7 +20,8 @@ class ApiClientFirestoreException implements Exception {
 
 class ApiClient {
   late FirebaseAuth _firebaseAuth;
-  late FirebaseFirestore _firestore;
+  late FirebaseFirestore _firebaseFirestore;
+  late FirebaseStorage _firebaseStorage;
 
   ApiClient._();
 
@@ -30,7 +32,8 @@ class ApiClient {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     _firebaseAuth = FirebaseAuth.instance;
-    _firestore = FirebaseFirestore.instance;
+    _firebaseFirestore = FirebaseFirestore.instance;
+    _firebaseStorage = FirebaseStorage.instance;
   }
 
   Future<UserCredential?> signInWithEmailAndPassword(
@@ -181,7 +184,7 @@ class ApiClient {
 
   Future<List<Book>> getAllBooks() async {
     try {
-      final collection = await _firestore
+      final collection = await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
@@ -196,15 +199,15 @@ class ApiClient {
     }
   }
 
-  Future<void> addBook(String title, Book book) async {
+  Future<void> addBook(Book book) async {
     try {
-      await _firestore
+      await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
             toFirestore: (Book book, options) => book.toFirestore(),
           )
-          .doc(title)
+          .doc(book.title)
           .set(book);
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error adding Book.');
@@ -229,7 +232,7 @@ class ApiClient {
       if (rating != null) 'rating': rating,
     };
     try {
-      await _firestore
+      await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
@@ -246,7 +249,7 @@ class ApiClient {
 
   Future<void> deleteBook(String title) async {
     try {
-      await _firestore
+      await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
@@ -263,7 +266,7 @@ class ApiClient {
 
   Future<Book?> getBook(String title) async {
     try {
-      final book = await _firestore
+      final book = await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
@@ -277,6 +280,15 @@ class ApiClient {
       throw ApiClientFirestoreException(e.message ?? 'Error getting Book');
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<String> getPhotoURL(String title) async {
+    try {
+      final ref = _firebaseStorage.ref('images/$title.jpg');
+      return await ref.getDownloadURL();
+    } catch (e) {
+      return 'https://edit.org/images/cat/book-covers-big-2019101610.jpg';
     }
   }
 }

@@ -26,7 +26,12 @@ class HomeViewModel extends ChangeNotifier {
       String category = book.category;
       String title = book.title;
       String authors = book.authors;
-      final BookInfo bookInfo = BookInfo(title: title, authors: authors);
+      String url = book.imageURL;
+      final BookInfo bookInfo = BookInfo(
+        title: title,
+        authors: authors,
+        imageUrl: url,
+      );
       if (booksByCategory.containsKey(category)) {
         booksByCategory[category]!.add(bookInfo);
       } else {
@@ -41,14 +46,13 @@ class HomeViewModel extends ChangeNotifier {
 }
 
 class BookInfo {
-  String imageUrl;
   String title;
   String authors;
+  String imageUrl;
 
   BookInfo({
-    this.imageUrl =
-        'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
     required this.title,
     required this.authors,
+    required this.imageUrl,
   });
 }

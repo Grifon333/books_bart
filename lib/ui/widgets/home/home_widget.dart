@@ -249,6 +249,9 @@ class _BookTileWidget extends StatelessWidget {
               child: Image.network(
                 _bookInfo.imageUrl,
                 fit: BoxFit.fitWidth,
+                errorBuilder: (context, error, _) => Image.network(
+                  'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+                ),
               ),
             ),
             const SizedBox(height: 4),

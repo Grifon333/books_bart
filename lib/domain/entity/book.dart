@@ -6,6 +6,7 @@ class Book {
   final int countPage;
   final String description;
   final String category;
+  final String imageURL;
   final Map<String, int> rating;
 
   static const Map<String, int> _emptyRating = {
@@ -22,6 +23,7 @@ class Book {
     required this.countPage,
     required this.description,
     required this.category,
+    this.imageURL = 'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
     this.rating = _emptyRating,
   });
 
@@ -40,6 +42,7 @@ class Book {
       countPage: data?['count_page'],
       description: data?['description'],
       category: data?['category'],
+      imageURL: data?['image_url'] ?? 'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
       rating: ratingData,
     );
   }
@@ -51,6 +54,7 @@ class Book {
       'count_page': countPage,
       'description': description,
       'category': category,
+      'image_url': imageURL,
       'rating': rating,
     };
   }
