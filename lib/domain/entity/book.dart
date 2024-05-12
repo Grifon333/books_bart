@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Book {
-  final String title;
-  final String authors;
-  final int countPage;
-  final String description;
-  final String category;
-  final String imageURL;
-  final Map<String, int> rating;
+  String title;
+  String authors;
+  int countPage;
+  String description;
+  String category;
+  String imageURL;
+  Map<String, int> rating;
 
   static const Map<String, int> _emptyRating = {
     '1': 0,
@@ -23,9 +23,20 @@ class Book {
     required this.countPage,
     required this.description,
     required this.category,
-    this.imageURL = 'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+    this.imageURL =
+        'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
     this.rating = _emptyRating,
   });
+
+  factory Book.empty() {
+    return Book(
+      title: '',
+      authors: '',
+      countPage: 0,
+      description: '',
+      category: '',
+    );
+  }
 
   factory Book.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -42,7 +53,8 @@ class Book {
       countPage: data?['count_page'],
       description: data?['description'],
       category: data?['category'],
-      imageURL: data?['image_url'] ?? 'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
+      imageURL: data?['image_url'] ??
+          'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
       rating: ratingData,
     );
   }
@@ -57,6 +69,26 @@ class Book {
       'image_url': imageURL,
       'rating': rating,
     };
+  }
+
+  Book copyWith({
+    String? title,
+    String? authors,
+    int? countPage,
+    String? description,
+    String? category,
+    String? imageURL,
+    Map<String, int>? rating,
+  }) {
+    return Book(
+      title: title ?? this.title,
+      authors: authors ?? this.authors,
+      countPage: countPage ?? this.countPage,
+      description: description ?? this.description,
+      category: category ?? this.category,
+      imageURL: imageURL ?? this.imageURL,
+      rating: rating ?? this.rating,
+    );
   }
 
   @override

@@ -1,5 +1,9 @@
 import 'package:books_bart/ui/widgets/book_details/book_details_view_model.dart';
 import 'package:books_bart/ui/widgets/book_details/book_details_widget.dart';
+import 'package:books_bart/ui/widgets/book_handling/form_book_info_view_model.dart';
+import 'package:books_bart/ui/widgets/book_handling/form_book_info_widget.dart';
+import 'package:books_bart/ui/widgets/book_handling/book_handling_view_model.dart';
+import 'package:books_bart/ui/widgets/book_handling/book_handling_widget.dart';
 import 'package:books_bart/ui/widgets/bottom_navigation_bar/bottom_navigation_bar_view_model.dart';
 import 'package:books_bart/ui/widgets/bottom_navigation_bar/bottom_navigation_bar_widget.dart';
 import 'package:books_bart/ui/widgets/cart/cart_view_model.dart';
@@ -108,6 +112,31 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => ProfileViewModel(context),
       child: const ProfileWidget(),
+    );
+  }
+
+  Widget makeBookHandling() {
+    return ChangeNotifierProvider(
+      create: (context) => BookHandlingViewModel(context),
+      child: const BookHandlingWidget(),
+    );
+  }
+
+  Widget makeAddFormBookInfo() {
+    return ChangeNotifierProvider(
+      create: (context) => FormBookInfoViewModel(context, FormType.add),
+      child: FormBookInfoWidget.add(),
+    );
+  }
+
+  Widget makeEditFormBookInfo(String bookId) {
+    return ChangeNotifierProvider(
+      create: (context) => FormBookInfoViewModel(
+        context,
+        FormType.edit,
+        bookId: bookId,
+      ),
+      child: FormBookInfoWidget.edit(),
     );
   }
 }

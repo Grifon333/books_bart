@@ -14,6 +14,7 @@ class MainNavigationNameRoute {
   static const cart = '/cart';
   static const order = '/cart/order';
   static const profile = '/profile';
+  static const bookHandling = '/book_handling';
 }
 
 class MainNavigation {
@@ -36,6 +37,8 @@ class MainNavigation {
     MainNavigationNameRoute.cart: (_) => _screenFactory.makeCart(),
     MainNavigationNameRoute.order: (_) => _screenFactory.makeOrder(),
     MainNavigationNameRoute.profile: (_) => _screenFactory.makeProfile(),
+    MainNavigationNameRoute.bookHandling: (_) =>
+        _screenFactory.makeBookHandling(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -66,5 +69,19 @@ class MainNavigation {
 
   void goToProfileScreen(BuildContext context) {
     Navigator.of(context).pushNamed(MainNavigationNameRoute.profile);
+  }
+
+  void showAddFormBookInfo(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => _screenFactory.makeAddFormBookInfo(),
+    );
+  }
+
+  void showEditFormBookInfo(BuildContext context, String bookId) {
+    showDialog(
+      context: context,
+      builder: (context) => _screenFactory.makeEditFormBookInfo(bookId),
+    );
   }
 }

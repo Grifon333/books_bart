@@ -84,6 +84,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
                     index: selectIndex,
                     children: [
                       _screenFactory.makeHome(),
+                      _screenFactory.makeBookHandling(),
                       _screenFactory.makeFavoriteBooks(),
                       _screenFactory.makeCart(),
                       _screenFactory.makeSettings(),
@@ -138,6 +139,7 @@ class _BottomNavigationBar extends StatefulWidget {
 class _BottomNavigationBarState extends State<_BottomNavigationBar> {
   final icons = [
     Icons.book,
+    Icons.add,
     Icons.bookmark,
     Icons.shopping_cart,
     Icons.settings,

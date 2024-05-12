@@ -1,6 +1,8 @@
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -182,7 +184,7 @@ class ApiClient {
     }
   }
 
-  Future<List<Book>> getAllBooks() async {
+  Future<Map<String, Book>> getAllBooks() async {
     try {
       final collection = await _firebaseFirestore
           .collection('books')
@@ -191,7 +193,11 @@ class ApiClient {
             toFirestore: (Book book, options) => book.toFirestore(),
           )
           .get();
-      return collection.docs.map((e) => e.data()).toList();
+      Map<String, Book> result = {};
+      for (var doc in collection.docs) {
+        result.addAll({doc.id: doc.data()});
+      }
+      return result;
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error getting all Books.');
     } catch (e) {
@@ -199,16 +205,59 @@ class ApiClient {
     }
   }
 
-  Future<void> addBook(Book book) async {
+  Future<List<dynamic>> getBookInfoById(String bookId) async {
     try {
-      await _firebaseFirestore
+      final book = await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
             toFirestore: (Book book, options) => book.toFirestore(),
           )
-          .doc(book.title)
-          .set(book);
+          .doc(bookId)
+          .get()
+          .then((value) => value.data());
+      final variantsOfBook = await getVariantsOfBookById(bookId);
+      return [book, variantsOfBook];
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException('Error getting Book Info by ID.');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<List<VariantOfBook>> getVariantsOfBookById(String bookId) async {
+    try {
+      final variantsOfBook = await _firebaseFirestore
+          .collection('books/$bookId/variants_of_book')
+          .withConverter(
+            fromFirestore: VariantOfBook.fromFirestore,
+            toFirestore: (VariantOfBook variant, options) =>
+                variant.toFirestore(),
+          )
+          .get()
+          .then((value) => value.docs.map((e) => e.data()).toList());
+      return variantsOfBook;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+          'Error getting Variants of Book by ID.');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> addBook(Book book, List<VariantOfBook> variants) async {
+    try {
+      final bookId = await _firebaseFirestore
+          .collection('books')
+          .withConverter(
+            fromFirestore: Book.fromFirestore,
+            toFirestore: (Book book, options) => book.toFirestore(),
+          )
+          .add(book)
+          .then((value) => value.id);
+      for (VariantOfBook variant in variants) {
+        _addVariantOfBook(bookId, variant);
+      }
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error adding Book.');
     } catch (e) {
@@ -216,21 +265,33 @@ class ApiClient {
     }
   }
 
+  Future<void> _addVariantOfBook(
+    String bookId,
+    VariantOfBook variantOfBook,
+  ) async {
+    try {
+      await _firebaseFirestore
+          .collection('books/$bookId/variants_of_book')
+          .withConverter(
+            fromFirestore: VariantOfBook.fromFirestore,
+            toFirestore: (VariantOfBook variant, options) =>
+                variant.toFirestore(),
+          )
+          .add(variantOfBook);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding Variant of Book (bookId: $bookId).',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> updateBook(
-    String title, [
-    String? authors,
-    int? countPage,
-    String? description,
-    String? category,
-    Map<String, int>? rating,
-  ]) async {
-    Map<String, dynamic> updateMap = {
-      if (authors != null) 'authors': authors,
-      if (countPage != null) 'count_page': countPage,
-      if (description != null) 'description': description,
-      if (category != null) 'category': category,
-      if (rating != null) 'rating': rating,
-    };
+    String bookId,
+    Map<String, dynamic> bookUpdateMap,
+    List<VariantOfBook> newVariants,
+  ) async {
     try {
       await _firebaseFirestore
           .collection('books')
@@ -238,8 +299,14 @@ class ApiClient {
             fromFirestore: Book.fromFirestore,
             toFirestore: (Book book, options) => book.toFirestore(),
           )
-          .doc(title)
-          .update(updateMap);
+          .doc(bookId)
+          .update(bookUpdateMap);
+      final oldVariants = await getVariantsOfBookById(bookId);
+      Function deepEquals = const DeepCollectionEquality().equals;
+      if (deepEquals(oldVariants, newVariants)) return;
+      for(var variant in newVariants) {
+        _addVariantOfBook(bookId, variant);
+      }
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error updating Book.');
     } catch (e) {
