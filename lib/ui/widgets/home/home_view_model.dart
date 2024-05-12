@@ -43,6 +43,10 @@ class HomeViewModel extends ChangeNotifier {
     _state.books = booksByCategory;
     notifyListeners();
   }
+
+  Future<void> onRefresh() async {
+    _init();
+  }
 }
 
 class BookInfo {

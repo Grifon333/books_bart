@@ -158,16 +158,20 @@ class _ListBookGroupsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<HomeViewModel>();
     final List<String> groupsTitle = context.select(
       (HomeViewModel vm) => vm.state.books.keys.toList(),
     );
     return Expanded(
-      child: ListView.separated(
-        itemBuilder: (BuildContext context, int index) =>
-            _ListBooksInGroupWidget(groupsTitle[index]),
-        separatorBuilder: (BuildContext context, int index) =>
-            const SizedBox(height: 16),
-        itemCount: groupsTitle.length,
+      child: RefreshIndicator(
+        onRefresh: model.onRefresh,
+        child: ListView.separated(
+          itemBuilder: (BuildContext context, int index) =>
+              _ListBooksInGroupWidget(groupsTitle[index]),
+          separatorBuilder: (BuildContext context, int index) =>
+              const SizedBox(height: 16),
+          itemCount: groupsTitle.length,
+        ),
       ),
     );
   }

@@ -7,7 +7,7 @@ class VariantOfBook {
   double price;
   String publisher;
   String? bindingType;
-  int yearPublication;
+  int publicationYear;
 
   VariantOfBook({
     required this.format,
@@ -16,7 +16,7 @@ class VariantOfBook {
     required this.price,
     required this.publisher,
     this.bindingType,
-    required this.yearPublication,
+    required this.publicationYear,
   });
 
   factory VariantOfBook.empty() {
@@ -25,7 +25,7 @@ class VariantOfBook {
       language: '',
       price: 0,
       publisher: '',
-      yearPublication: 0,
+      publicationYear: 0,
     );
   }
 
@@ -41,7 +41,7 @@ class VariantOfBook {
       price: data?['price'],
       publisher: data?['publisher'],
       bindingType: data?['binding_type'],
-      yearPublication: data?['year_publication'],
+      publicationYear: data?['year_publication'],
     );
   }
 
@@ -53,7 +53,7 @@ class VariantOfBook {
       'price': price,
       'publisher': publisher,
       if (bindingType != null) 'binding_type': bindingType,
-      'year_publication': yearPublication,
+      'year_publication': publicationYear,
     };
   }
 
@@ -71,7 +71,7 @@ class VariantOfBook {
       language: language ?? this.language,
       price: price ?? this.price,
       publisher: publisher ?? this.publisher,
-      yearPublication: yearPublication ?? this.yearPublication,
+      publicationYear: yearPublication ?? this.publicationYear,
     );
   }
 
@@ -84,7 +84,7 @@ class VariantOfBook {
         'price: $price\n'
         'publisher: $publisher\n'
         'binding type: $bindingType\n'
-        'year publication: $yearPublication\n'
+        'year publication: $publicationYear\n'
         '}';
   }
 }

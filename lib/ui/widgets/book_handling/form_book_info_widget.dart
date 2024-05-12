@@ -51,9 +51,8 @@ class _FormBookInfoWidget extends FormBookInfoWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<FormBookInfoViewModel>();
-    final countVariants = context
-        .select((FormBookInfoViewModel vm) => vm.state.variantsOfBook.length);
+    final model = context.watch<FormBookInfoViewModel>();
+    final countVariants = model.state.variantsOfBook.length;
     return AlertDialog(
       title: Text(title),
       content: Column(
@@ -128,63 +127,46 @@ class _MainBookInfoTextFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<FormBookInfoViewModel>();
+    final state = model.state;
     return Column(
       children: [
-        TextField(
-          controller: TextEditingController(text: model.state.book.title)
-            ..selection = TextSelection.collapsed(
-              offset: model.state.book.title.length,
-            ),
-          decoration: const InputDecoration(labelText: 'title'),
-          onChanged: model.onChangedTitleBook,
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'title',
+          state.title,
+          model.onChangedTitle,
+          errorText: state.titleError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(text: model.state.book.authors)
-            ..selection = TextSelection.collapsed(
-              offset: model.state.book.authors.length,
-            ),
-          decoration: const InputDecoration(labelText: 'authors'),
-          onChanged: model.onChangedAuthorsBook,
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'authors',
+          state.authors,
+          model.onChangedAuthors,
+          errorText: state.authorsError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.book.countPage == 0
-                ? ''
-                : '${model.state.book.countPage}',
-          )..selection = TextSelection.collapsed(
-              offset: model.state.book.countPage == 0
-                  ? 0
-                  : '${model.state.book.countPage}'.length,
-            ),
-          decoration: const InputDecoration(labelText: 'count of pages'),
-          onChanged: model.onChangedCountPageBook,
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'count of pages',
+          state.countPage,
+          model.onChangedCountPage,
+          textInputType: TextInputType.datetime,
+          errorText: state.countPageError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(text: model.state.book.description)
-            ..selection = TextSelection.collapsed(
-              offset: model.state.book.description.length,
-            ),
-          decoration: const InputDecoration(labelText: 'description'),
-          onChanged: model.onChangedDescriptionBook,
+        _TextFieldBookIndoWidget(
+          'description',
+          state.description,
+          model.onChangedDescription,
           minLines: 3,
           maxLines: 5,
-          textInputAction: TextInputAction.next,
+          errorText: state.descriptionError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(text: model.state.book.category)
-            ..selection = TextSelection.collapsed(
-              offset: model.state.book.category.length,
-            ),
-          decoration: const InputDecoration(labelText: 'category'),
-          onChanged: model.onChangedCategoryBook,
+        _TextFieldBookIndoWidget(
+          'category',
+          state.category,
+          model.onChangedCategory,
           textInputAction: TextInputAction.done,
+          errorText: state.categoryError,
         ),
       ],
     );
@@ -198,107 +180,103 @@ class _VariantOfBookTextFieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<FormBookInfoViewModel>();
+    final model = context.read<FormBookInfoViewModel>();
+    final variantOfBook = model.state.variantsOfBook[index];
     return Column(
       children: [
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].format,
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].format.length,
-            ),
-          decoration: const InputDecoration(labelText: 'format'),
-          onChanged: (value) =>
-              model.onChangedFormatVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'format',
+          variantOfBook.format,
+          (value) => model.onChangedFormat(index, value),
+          errorText: variantOfBook.formatError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].count == 0 ||
-                    model.state.variantsOfBook[index].count == null
-                ? ''
-                : '${model.state.variantsOfBook[index].count}',
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].count == 0 ||
-                      model.state.variantsOfBook[index].count == null
-                  ? 0
-                  : '${model.state.variantsOfBook[index].count}'.length,
-            ),
-          decoration: const InputDecoration(labelText: 'count'),
-          onChanged: (value) => model.onChangedCountVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'count',
+          variantOfBook.count,
+          (value) => model.onChangedCount(index, value),
+          textInputType: TextInputType.datetime,
+          errorText: variantOfBook.countError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].language,
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].language.length,
-            ),
-          decoration: const InputDecoration(labelText: 'language'),
-          onChanged: (value) =>
-              model.onChangedLanguageVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'language',
+          variantOfBook.language,
+          (value) => model.onChangedLanguage(index, value),
+          errorText: variantOfBook.languageError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].price == 0
-                ? ''
-                : '${model.state.variantsOfBook[index].price}',
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].price == 0
-                  ? 0
-                  : '${model.state.variantsOfBook[index].price}'.length,
-            ),
-          decoration: const InputDecoration(labelText: 'price'),
-          onChanged: (value) => model.onChangedPriceVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'price',
+          variantOfBook.price,
+          (value) => model.onChangedPrice(index, value),
+          textInputType: TextInputType.datetime,
+          errorText: variantOfBook.priceError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].publisher,
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].publisher.length,
-            ),
-          decoration: const InputDecoration(labelText: 'publisher'),
-          onChanged: (value) =>
-              model.onChangedPublisherVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'publisher',
+          variantOfBook.publisher,
+          (value) => model.onChangedPublisher(index, value),
+          errorText: variantOfBook.publisherError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].bindingType,
-          )..selection = TextSelection.collapsed(
-              offset:
-                  model.state.variantsOfBook[index].bindingType?.length ?? 0,
-            ),
-          decoration: const InputDecoration(labelText: 'type of binding'),
-          onChanged: (value) =>
-              model.onChangedBindingTypeVariantOfBook(index, value),
-          textInputAction: TextInputAction.next,
+        _TextFieldBookIndoWidget(
+          'type of binding',
+          variantOfBook.bindingType,
+          (value) => model.onChangedBindingType(index, value),
+          errorText: variantOfBook.bindingTypeError,
         ),
         const SizedBox(height: 10),
-        TextField(
-          controller: TextEditingController(
-            text: model.state.variantsOfBook[index].yearPublication == 0
-                ? ''
-                : '${model.state.variantsOfBook[index].yearPublication}',
-          )..selection = TextSelection.collapsed(
-              offset: model.state.variantsOfBook[index].yearPublication == 0
-                  ? 0
-                  : '${model.state.variantsOfBook[index].yearPublication}'
-                      .length,
-            ),
-          decoration: const InputDecoration(labelText: 'publication year'),
-          onChanged: (value) =>
-              model.onChangedYearPublicationVariantOfBook(index, value),
-          textInputAction: TextInputAction.done,
+        _TextFieldBookIndoWidget(
+          'publication year',
+          variantOfBook.publicationYear,
+          (value) => model.onChangedPublicationYear(index, value),
+          textInputType: TextInputType.datetime,
+          errorText: variantOfBook.publicationYearError,
         ),
       ],
+    );
+  }
+}
+
+class _TextFieldBookIndoWidget extends StatelessWidget {
+  final String label;
+  final String? text;
+  final void Function(String) onChanged;
+  final String? errorText;
+  final int minLines;
+  final int maxLines;
+  final TextInputAction textInputAction;
+  final TextInputType textInputType;
+
+  const _TextFieldBookIndoWidget(
+    this.label,
+    this.text,
+    this.onChanged, {
+    this.errorText,
+    this.minLines = 1,
+    this.maxLines = 1,
+    this.textInputAction = TextInputAction.next,
+    this.textInputType = TextInputType.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: TextEditingController(text: text)
+        ..selection = TextSelection.collapsed(
+          offset: text?.length ?? 0,
+        ),
+      decoration: InputDecoration(
+        labelText: label,
+        errorText: errorText,
+      ),
+      onChanged: onChanged,
+      textInputAction: textInputAction,
+      minLines: minLines,
+      maxLines: maxLines,
+      keyboardType: textInputType,
     );
   }
 }
