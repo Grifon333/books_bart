@@ -96,7 +96,7 @@ class _BookCartWidget extends StatelessWidget {
           motion: const ScrollMotion(),
           children: [
             SlidableAction(
-              onPressed: (_) => debugPrint('Delete ${_book.title}'),
+              onPressed: (_) => model.onPressedRemove(_book.id),
               foregroundColor: Colors.red,
               backgroundColor: const Color(0xFFF5EEE5),
               icon: Icons.delete,

@@ -45,7 +45,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> onRefresh() async {
-    _init();
+    await _init();
   }
 }
 

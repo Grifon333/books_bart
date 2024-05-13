@@ -2,7 +2,6 @@ import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -216,7 +215,8 @@ class ApiClient {
           .doc(bookId)
           .get()
           .then((value) => value.data());
-      final variantsOfBook = await getVariantsOfBookById(bookId);
+      final variantsOfBook =
+          (await getVariantsOfBookById(bookId)).values.toList();
       return [book, variantsOfBook];
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error getting Book Info by ID.');
@@ -225,17 +225,21 @@ class ApiClient {
     }
   }
 
-  Future<List<VariantOfBook>> getVariantsOfBookById(String bookId) async {
+  Future<Map<String, VariantOfBook>> getVariantsOfBookById(
+      String bookId) async {
     try {
-      final variantsOfBook = await _firebaseFirestore
+      Map<String, VariantOfBook> variantsOfBook = {};
+      final querySnapshot = await _firebaseFirestore
           .collection('books/$bookId/variants_of_book')
           .withConverter(
             fromFirestore: VariantOfBook.fromFirestore,
             toFirestore: (VariantOfBook variant, options) =>
                 variant.toFirestore(),
           )
-          .get()
-          .then((value) => value.docs.map((e) => e.data()).toList());
+          .get();
+      for (var doc in querySnapshot.docs) {
+        variantsOfBook.addAll({doc.id: doc.data()});
+      }
       return variantsOfBook;
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
@@ -290,7 +294,7 @@ class ApiClient {
   Future<void> updateBook(
     String bookId,
     Map<String, dynamic> bookUpdateMap,
-    List<VariantOfBook> newVariants,
+    List<VariantOfBook> variantsOfBook,
   ) async {
     try {
       await _firebaseFirestore
@@ -301,10 +305,20 @@ class ApiClient {
           )
           .doc(bookId)
           .update(bookUpdateMap);
-      final oldVariants = await getVariantsOfBookById(bookId);
-      Function deepEquals = const DeepCollectionEquality().equals;
-      if (deepEquals(oldVariants, newVariants)) return;
-      for(var variant in newVariants) {
+      Map<String, VariantOfBook> oldVariants =
+          await getVariantsOfBookById(bookId);
+      List<VariantOfBook> newVariants = [];
+      for (var variantOfBook in variantsOfBook) {
+        if (oldVariants.values.contains(variantOfBook)) {
+          oldVariants.removeWhere((key, value) => value == variantOfBook);
+          continue;
+        }
+        newVariants.add(variantOfBook);
+      }
+      for (String id in oldVariants.keys) {
+        deleteVariantOfBook(bookId, id);
+      }
+      for (var variant in newVariants) {
         _addVariantOfBook(bookId, variant);
       }
     } on FirebaseException {
@@ -314,18 +328,43 @@ class ApiClient {
     }
   }
 
-  Future<void> deleteBook(String title) async {
+  Future<void> deleteBook(String bookId) async {
     try {
+      List<String> variantsOfBookId =
+          (await getVariantsOfBookById(bookId)).keys.toList();
+      for (String id in variantsOfBookId) {
+        deleteVariantOfBook(bookId, id);
+      }
       await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
             toFirestore: (Book book, options) => book.toFirestore(),
           )
-          .doc(title)
+          .doc(bookId)
           .delete();
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error deleting Book.');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> deleteVariantOfBook(
+    String bookId,
+    String variantOfBookId,
+  ) async {
+    try {
+      await _firebaseFirestore
+          .collection('books/$bookId/variants_of_book')
+          .withConverter(
+            fromFirestore: VariantOfBook.fromFirestore,
+            toFirestore: (VariantOfBook book, options) => book.toFirestore(),
+          )
+          .doc(variantOfBookId)
+          .delete();
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException('Error deleting Variant of Book.');
     } catch (e) {
       throw Exception(e.toString());
     }

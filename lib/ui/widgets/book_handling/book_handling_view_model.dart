@@ -45,7 +45,11 @@ class BookHandlingViewModel extends ChangeNotifier {
     _mainNavigation.showEditFormBookInfo(context, bookId);
   }
 
-  void onPressedRemove() {}
+  void onPressedRemove(String bookId) {
+    _bookRepository.deleteBook(bookId);
+    _state.books.removeWhere((book) => book.id == bookId);
+    notifyListeners();
+  }
 
   Future<void> onRefresh() async {
     _init();

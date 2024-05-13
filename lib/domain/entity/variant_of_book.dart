@@ -76,6 +76,29 @@ class VariantOfBook {
   }
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is VariantOfBook &&
+          runtimeType == other.runtimeType &&
+          format == other.format &&
+          count == other.count &&
+          language == other.language &&
+          price == other.price &&
+          publisher == other.publisher &&
+          bindingType == other.bindingType &&
+          publicationYear == other.publicationYear;
+
+  @override
+  int get hashCode =>
+      format.hashCode ^
+      count.hashCode ^
+      language.hashCode ^
+      price.hashCode ^
+      publisher.hashCode ^
+      bindingType.hashCode ^
+      publicationYear.hashCode;
+
+  @override
   String toString() {
     return 'VariantOfBook {\n'
         'format: $format\n'

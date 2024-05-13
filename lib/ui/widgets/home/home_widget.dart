@@ -158,10 +158,8 @@ class _ListBookGroupsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<HomeViewModel>();
-    final List<String> groupsTitle = context.select(
-      (HomeViewModel vm) => vm.state.books.keys.toList(),
-    );
+    final model = context.watch<HomeViewModel>();
+    final List<String> groupsTitle = model.state.books.keys.toList();
     return Expanded(
       child: RefreshIndicator(
         onRefresh: model.onRefresh,

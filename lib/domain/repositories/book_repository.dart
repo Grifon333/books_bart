@@ -54,4 +54,12 @@ class BookRepository {
       debugPrint(e.toString());
     }
   }
+
+  Future<void> deleteBook(String bookId) async {
+    try {
+      await _apiClient.deleteBook(bookId);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }
