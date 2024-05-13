@@ -2,16 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Order {
   String uid;
-  DateTime dateRegistration;
-  int price;
-  String paymentMethod;
+  DateTime? dateRegistration;
+  double price;
+  String? paymentMethod;
   String status;
 
   Order({
     required this.uid,
-    required this.dateRegistration,
+    this.dateRegistration,
     required this.price,
-    required this.paymentMethod,
+    this.paymentMethod,
     required this.status,
   });
 

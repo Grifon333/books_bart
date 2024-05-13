@@ -4,11 +4,13 @@ class BookInOrder {
   String idOrder;
   int count;
   String idVariantOfBook;
+  String idBook;
 
   BookInOrder({
     required this.idOrder,
     required this.count,
     required this.idVariantOfBook,
+    required this.idBook,
   });
 
   factory BookInOrder.fromFirestore(
@@ -20,6 +22,7 @@ class BookInOrder {
       idOrder: data?['id_order'],
       count: data?['count'],
       idVariantOfBook: data?['id_variant_of_book'],
+      idBook: data?['id_book'],
     );
   }
 
@@ -28,6 +31,7 @@ class BookInOrder {
       'id_order': idOrder,
       'count': count,
       'id_variant_of_book': idVariantOfBook,
+      'id_book': idBook,
     };
   }
 
@@ -37,6 +41,7 @@ class BookInOrder {
         'id order: $idOrder\n'
         'count: $count\n'
         'id variant of book: $idVariantOfBook\n'
+        'id book: $idBook\n'
         '}';
   }
 }

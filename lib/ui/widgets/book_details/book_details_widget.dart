@@ -110,6 +110,8 @@ class _BookInfoWidget extends StatelessWidget {
                   _AdditionInfoWidget(),
                   SizedBox(height: 20),
                   _DescriptionWidget(),
+                  SizedBox(height: 20),
+                  _VariantsOfBookInfoWidget(),
                 ],
               ),
             ),
@@ -132,7 +134,7 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String title = 'Psychology of Money';
+    final title = context.select((BookDetailsViewModel vm) => vm.state.title);
     return Text(
       title,
       style: const TextStyle(
@@ -149,9 +151,10 @@ class _AuthorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String author = 'Morgan Housel';
+    final authors =
+        context.select((BookDetailsViewModel vm) => vm.state.authors);
     return Text(
-      author,
+      authors,
       style: const TextStyle(
         fontSize: 14,
         color: Color(0xFFF06267),
@@ -179,9 +182,12 @@ class _AdditionInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rating = context.select((BookDetailsViewModel vm) => vm.state.rating);
+    final countPage =
+        context.select((BookDetailsViewModel vm) => vm.state.countPage);
     final List<List<String>> additionalInfoList = [
-      ['Rating', '4.5'],
-      ['Pages', '200'],
+      ['Rating', rating],
+      ['Pages', countPage],
       ['Language', 'EN'],
     ];
     return DecoratedBox(
@@ -259,12 +265,15 @@ class _DescriptionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String description =
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dignissim tellus ut tincidunt interdum egestas. Et, tempus pellentesque tellus vulputate dignissim.Massa est, in quam tempus. Mattis bibendum sit mattis dapibus viverra';
+    final description =
+        context.select((BookDetailsViewModel vm) => vm.state.description);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Description'),
+        const Text(
+          'Description',
+          style: TextStyle(fontSize: 18),
+        ),
         const SizedBox(height: 8),
         Text(description),
       ],
@@ -277,22 +286,24 @@ class _ActionButtonsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<BookDetailsViewModel>();
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      child: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Row(
           children: [
             Expanded(
-              child: _ButtonWidget(
-                title: 'Add to cart',
+              child: FilledButton(
+                onPressed: model.onPressedAddToCart,
+                child: const Text(
+                  'Add to cart',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-            SizedBox(width: 20),
-            Expanded(
-              child: _ButtonWidget(
-                title: 'Buy e-book',
-              ), // If book is bought -> 'Go to Library' and change background color
             ),
           ],
         ),
@@ -301,20 +312,107 @@ class _ActionButtonsWidget extends StatelessWidget {
   }
 }
 
-class _ButtonWidget extends StatelessWidget {
-  final String title;
-
-  const _ButtonWidget({
-    required this.title,
-  });
-
-  void onPressed() => debugPrint('Button: $title');
+class _VariantsOfBookInfoWidget extends StatelessWidget {
+  const _VariantsOfBookInfoWidget();
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: onPressed,
-      child: Text(title),
+    final countVariants =
+        context.watch<BookDetailsViewModel>().state.variantsOfBook.length;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(
+          countVariants,
+          (index) => Row(
+            children: [
+              _VariantOfBookInfoWidget(index),
+              const SizedBox(width: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _VariantOfBookInfoWidget extends StatelessWidget {
+  final int index;
+
+  const _VariantOfBookInfoWidget(this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<BookDetailsViewModel>();
+    final variantOfBook = model.state.variantsOfBook[index];
+    final selectVariantOfBook = model.state.selectVariantOfBook;
+    final color = selectVariantOfBook == index ? Colors.black12 : null;
+    return GestureDetector(
+      onTap: () => model.onTapVariantOfBook(index),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          border: Border.all(color: const Color(0xFF7E675E)),
+          color: color,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            width: 120,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      variantOfBook.format,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF7E675E),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      variantOfBook.language,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  variantOfBook.publisher,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                variantOfBook.bindingType != null
+                    ? Text(
+                        variantOfBook.bindingType!,
+                        style: const TextStyle(fontSize: 16),
+                      )
+                    : const SizedBox.shrink(),
+                Text(
+                  variantOfBook.publicationYear,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Spacer(),
+                    Text(
+                      variantOfBook.price,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Color(0xFF7E675E),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

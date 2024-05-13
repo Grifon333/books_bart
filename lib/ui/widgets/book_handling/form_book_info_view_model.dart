@@ -72,7 +72,8 @@ class FormBookInfoViewModel extends ChangeNotifier {
     _state.countPage = '${book.countPage}';
     _state.description = book.description;
     _state.category = book.category;
-    List<VariantOfBook> variantsOfBook = data[1];
+    List<VariantOfBook> variantsOfBook =
+        (data[1] as Map<String, VariantOfBook>).values.toList();
     _state.variantsOfBook.clear();
     for (var variant in variantsOfBook) {
       final variantState = VariantOfBookState();

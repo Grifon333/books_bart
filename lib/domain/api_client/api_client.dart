@@ -1,7 +1,9 @@
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/entity/book_in_order.dart';
+import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as cloud_firestore;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -21,7 +23,7 @@ class ApiClientFirestoreException implements Exception {
 
 class ApiClient {
   late FirebaseAuth _firebaseAuth;
-  late FirebaseFirestore _firebaseFirestore;
+  late cloud_firestore.FirebaseFirestore _firebaseFirestore;
   late FirebaseStorage _firebaseStorage;
 
   ApiClient._();
@@ -33,7 +35,7 @@ class ApiClient {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     _firebaseAuth = FirebaseAuth.instance;
-    _firebaseFirestore = FirebaseFirestore.instance;
+    _firebaseFirestore = cloud_firestore.FirebaseFirestore.instance;
     _firebaseStorage = FirebaseStorage.instance;
   }
 
@@ -215,8 +217,7 @@ class ApiClient {
           .doc(bookId)
           .get()
           .then((value) => value.data());
-      final variantsOfBook =
-          (await getVariantsOfBookById(bookId)).values.toList();
+      final variantsOfBook = await getVariantsOfBookById(bookId);
       return [book, variantsOfBook];
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error getting Book Info by ID.');
@@ -395,6 +396,88 @@ class ApiClient {
       return await ref.getDownloadURL();
     } catch (e) {
       return 'https://edit.org/images/cat/book-covers-big-2019101610.jpg';
+    }
+  }
+
+  Future<String> addOrder(Order order) async {
+    try {
+      final docReference = await _firebaseFirestore
+          .collection('order')
+          .withConverter(
+            fromFirestore: Order.fromFirestore,
+            toFirestore: (Order order, options) => order.toFirestore(),
+          )
+          .add(order);
+      return docReference.id;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> addBookInOrder(BookInOrder bookInOrder) async {
+    try {
+      await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .add(bookInOrder);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding Book in Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String?> isExistBookInOrder(BookInOrder bookInOrder) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .where('id_order', isEqualTo: bookInOrder.idOrder)
+          .where('id_variant_of_book', isEqualTo: bookInOrder.idVariantOfBook)
+          .where('id_book', isEqualTo: bookInOrder.idBook)
+          .get();
+      if (querySnapshot.size == 0) return null;
+      return querySnapshot.docs[0].id;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error check of exist of Book in Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateCountOfBookInOrder(String bookInOrderId) async {
+    try {
+      await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .doc(bookInOrderId)
+          .update({'count': cloud_firestore.FieldValue.increment(1)});
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error updating count of Book in Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 }
