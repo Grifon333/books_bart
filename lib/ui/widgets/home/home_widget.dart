@@ -233,14 +233,11 @@ class _BookTileWidget extends StatelessWidget {
     this._bookInfo,
   );
 
-  void onTap() {
-    debugPrint('Title: ${_bookInfo.title}, author: ${_bookInfo.authors}');
-  }
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<HomeViewModel>();
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => model.onTapBookInfo(_bookInfo.id),
       child: SizedBox(
         width: 104,
         child: Column(

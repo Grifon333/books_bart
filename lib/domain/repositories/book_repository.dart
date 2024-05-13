@@ -6,16 +6,6 @@ import 'package:flutter/material.dart';
 class BookRepository {
   final ApiClient _apiClient = ApiClient.instance;
 
-  Future<List<Book>> getAllBooks() async {
-    try {
-      final books = await _apiClient.getAllBooks();
-      return books.values.toList();
-    } catch (e) {
-      debugPrint(e.toString());
-      return [];
-    }
-  }
-
   Future<Map<String, Book>> getAllBooksWithId() async {
     try {
       final books = await _apiClient.getAllBooks();

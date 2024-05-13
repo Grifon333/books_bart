@@ -1,19 +1,20 @@
+import 'package:books_bart/ui/widgets/book_details/book_details_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BookDetailsWidget extends StatelessWidget {
   const BookDetailsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<BookDetailsViewModel>();
     return Scaffold(
       backgroundColor: const Color(0xFFF5EEE5),
       appBar: AppBar(
         backgroundColor: const Color(0xFFF5EEE5),
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            debugPrint('Return');
-          },
+          onPressed: model.onPressedReturn,
           icon: const Icon(
             Icons.chevron_left,
             color: Color(0xFF7E675E),

@@ -73,9 +73,9 @@ class ScreenFactory {
     );
   }
 
-  Widget makeBookDetails() {
+  Widget makeBookDetails(String bookId) {
     return ChangeNotifierProvider(
-      create: (context) => BookDetailsViewModel(context),
+      create: (context) => BookDetailsViewModel(context, bookId),
       child: const BookDetailsWidget(),
     );
   }

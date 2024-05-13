@@ -29,8 +29,8 @@ class MainNavigation {
     MainNavigationNameRoute.favoriteBooks: (_) =>
         _screenFactory.makeFavoriteBooks(),
     MainNavigationNameRoute.settings: (_) => _screenFactory.makeSettings(),
-    MainNavigationNameRoute.bookDetails: (_) =>
-        _screenFactory.makeBookDetails(),
+    // MainNavigationNameRoute.bookDetails: (_) =>
+    //     _screenFactory.makeBookDetails(),
     MainNavigationNameRoute.bottomNavigationBar: (_) =>
         _screenFactory.makeBottomNavigationBar(),
     MainNavigationNameRoute.sideBar: (_) => _screenFactory.makeSideBar(),
@@ -43,6 +43,11 @@ class MainNavigation {
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case MainNavigationNameRoute.bookDetails:
+        final bookId = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => _screenFactory.makeBookDetails(bookId),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(
@@ -83,5 +88,16 @@ class MainNavigation {
       context: context,
       builder: (context) => _screenFactory.makeEditFormBookInfo(bookId),
     );
+  }
+
+  void goToBookDetailsScreen(BuildContext context, String bookId) {
+    Navigator.of(context).pushNamed(
+      MainNavigationNameRoute.bookDetails,
+      arguments: bookId,
+    );
+  }
+
+  void popFromBookDetailsScreen(BuildContext context) {
+    Navigator.of(context).pop();
   }
 }
