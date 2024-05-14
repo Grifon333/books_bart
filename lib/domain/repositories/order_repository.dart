@@ -53,4 +53,23 @@ class OrderRepository {
       debugPrint(e.toString());
     }
   }
+
+  Future<Map<String, BookInOrder>> getBooksInOrder() async {
+    try {
+      String? orderId = await _orderDataProvider.getOrderId();
+      if (orderId == null) return {};
+      return await _apiClient.getBooksInOrder(orderId);
+    } catch (e) {
+      debugPrint(e.toString());
+      return {};
+    }
+  }
+
+  Future<void> changeCountBookInOrder(String bookInOrderId, int count) async {
+    try {
+      await _apiClient.updateBookInOrder(bookInOrderId, {'count': count});
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }

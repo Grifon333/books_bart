@@ -100,4 +100,8 @@ class MainNavigation {
   void popFromBookDetailsScreen(BuildContext context) {
     Navigator.of(context).pop();
   }
+
+  void goToOrderScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(MainNavigationNameRoute.order);
+  }
 }

@@ -480,4 +480,52 @@ class ApiClient {
       throw Exception(e.toString());
     }
   }
+
+  Future<Map<String, BookInOrder>> getBooksInOrder(String orderId) async {
+    try {
+      Map<String, BookInOrder> result = {};
+      final docRef = await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .where('id_order', isEqualTo: orderId)
+          .get();
+      for (var doc in docRef.docs) {
+        result.addAll({doc.id: doc.data()});
+      }
+      return result;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting Books in Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> updateBookInOrder(
+    String bookInOrderId,
+    Map<String, dynamic> changes,
+  ) async {
+    try {
+      await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .doc(bookInOrderId)
+          .update(changes);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error updating Book in Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
