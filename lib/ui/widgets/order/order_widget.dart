@@ -1,4 +1,6 @@
+import 'package:books_bart/ui/widgets/order/order_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class OrderWidget extends StatelessWidget {
   const OrderWidget({super.key});
@@ -28,7 +30,7 @@ class _BodyWidget extends StatelessWidget {
   void onPressed() {
     debugPrint('Change credit card number');
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -111,22 +113,15 @@ class _BooksListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> booksTitle = [
-      'The last sister',
-      'The priority Tree',
-      'Werewolf Mountain',
-    ];
-    final List<int> booksCount = [1, 1, 2];
-    final List<double> booksPrice = [120, 90, 105];
+    List<BookInfo> booksInfo = context.watch<OrderViewModel>().state.booksInfo;
     return Column(
-      children: [
-        ...List.generate(
-          booksTitle.length,
-          (index) => _RowInfoWidget(
-              title: '${booksTitle[index]}  x  ${booksCount[index]}',
-              info: '\$ ${booksPrice[index]}'),
+      children: List.generate(
+        booksInfo.length,
+        (index) => _RowInfoWidget(
+          title: '${booksInfo[index].title}  x  ${booksInfo[index].countStr}',
+          info: '\$ ${booksInfo[index].price}',
         ),
-      ],
+      ),
     );
   }
 }
@@ -136,11 +131,12 @@ class _PriceInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final state = context.watch<OrderViewModel>().state;
+    return Column(
       children: [
-        _RowInfoWidget(title: 'Subtotal', info: '\$ 315'),
-        _RowInfoWidget(title: 'Tax & Fees', info: '\$ 42'),
-        _RowInfoWidget(title: 'Discount', info: '- \$ 315'),
+        _RowInfoWidget(title: 'Subtotal', info: state.subtotal),
+        _RowInfoWidget(title: 'Tax & Fees', info: state.taxes),
+        _RowInfoWidget(title: 'Discount', info: state.discount),
       ],
     );
   }
@@ -151,9 +147,10 @@ class _TotalPriceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _RowInfoWidget(
+    final state = context.watch<OrderViewModel>().state;
+    return _RowInfoWidget(
       title: 'Total',
-      info: '\$ 315',
+      info: state.total,
       size: 24,
       titleColor: Colors.white,
     );
@@ -202,14 +199,11 @@ class _RowInfoWidget extends StatelessWidget {
 class _SubmitOrderButton extends StatelessWidget {
   const _SubmitOrderButton();
 
-  void onPressed() {
-    debugPrint('Place Order');
-  }
-
   @override
   Widget build(BuildContext context) {
+    final model = context.watch<OrderViewModel>();
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: model.onPressedSubmitOrder,
       child: const Text(
         'Place Order',
         style: TextStyle(color: Colors.white),

@@ -528,4 +528,34 @@ class ApiClient {
       throw Exception(e.toString());
     }
   }
+
+  Future<void> submitOrder(
+    String orderId,
+    DateTime dateRegistration,
+    String paymentMethod,
+  ) async {
+    try {
+      await _firebaseFirestore
+          .collection('order')
+          .withConverter(
+            fromFirestore: Order.fromFirestore,
+            toFirestore: (Order order, options) => order.toFirestore(),
+          )
+          .doc(orderId)
+          .update(
+        {
+          'payment_method': paymentMethod,
+          'date_registration':
+              cloud_firestore.Timestamp.fromDate(dateRegistration),
+          'status': 'Submitted',
+        },
+      );
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error updating Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }

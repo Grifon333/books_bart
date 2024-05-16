@@ -24,6 +24,7 @@ class CartViewModel extends ChangeNotifier {
   }
 
   Future<void> _init() async {
+    _state.booksInfo.clear();
     Map<String, BookInOrder> booksInOrder =
         await _orderRepository.getBooksInOrder();
     for (var bookInOrderEntry in booksInOrder.entries) {
@@ -78,6 +79,10 @@ class CartViewModel extends ChangeNotifier {
 
   void onPressedOrder() {
     _mainNavigation.goToOrderScreen(context);
+  }
+
+  Future<void> onRefresh() async {
+    await _init();
   }
 }
 

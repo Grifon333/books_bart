@@ -104,4 +104,8 @@ class MainNavigation {
   void goToOrderScreen(BuildContext context) {
     Navigator.of(context).pushNamed(MainNavigationNameRoute.order);
   }
+
+  void popFromOrderScreen(BuildContext context) {
+    Navigator.of(context).pop();
+  }
 }

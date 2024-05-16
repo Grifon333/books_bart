@@ -26,21 +26,46 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Text(
-          'My Cart',
-          style: TextStyle(
-            fontSize: 32,
-            color: Color(0xFF7E675E),
-            fontWeight: FontWeight.w600,
+    final model = context.watch<CartViewModel>();
+    final countBooks = model.state.booksInfo.length;
+    return RefreshIndicator(
+      onRefresh: model.onRefresh,
+      child: ListView(
+        children: [
+          const Text(
+            'My Cart',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 32,
+              color: Color(0xFF7E675E),
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        SizedBox(height: 16),
-        _BooksListWidget(),
-        SizedBox(height: 16),
-        _OrderButtonWidget(),
-      ],
+          const SizedBox(height: 16),
+          countBooks > 0
+              ? const Column(
+                  children: [
+                    _BooksListWidget(),
+                    SizedBox(height: 16),
+                    _OrderButtonWidget(),
+                  ],
+                )
+              : const Column(
+                  children: [
+                    SizedBox(height: 200),
+                    Icon(
+                      Icons.cleaning_services_rounded,
+                      size: 160,
+                      color: Colors.grey,
+                    ),
+                    Text(
+                      'Empty',
+                      style: TextStyle(fontSize: 24, color: Colors.grey),
+                    ),
+                  ],
+                ),
+        ],
+      ),
     );
   }
 }

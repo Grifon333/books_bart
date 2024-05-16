@@ -39,7 +39,7 @@ class OrderRepository {
       }
       BookInOrder bookInOrder = BookInOrder(
         idOrder: orderId,
-        count: 0,
+        count: 1,
         idVariantOfBook: variantOfBookId,
         idBook: bookId,
       );
@@ -68,6 +68,21 @@ class OrderRepository {
   Future<void> changeCountBookInOrder(String bookInOrderId, int count) async {
     try {
       await _apiClient.updateBookInOrder(bookInOrderId, {'count': count});
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> submitOrder() async {
+    try {
+      String? orderId = await _orderDataProvider.getOrderId();
+      if (orderId == null) return;
+      await _apiClient.submitOrder(
+        orderId,
+        DateTime.now(),
+        'Card',
+      );
+      _orderDataProvider.deleteOrderId();
     } catch (e) {
       debugPrint(e.toString());
     }
