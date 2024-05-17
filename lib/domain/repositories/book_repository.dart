@@ -1,5 +1,6 @@
 import 'package:books_bart/domain/api_client/api_client.dart';
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:flutter/material.dart';
 
@@ -50,6 +51,50 @@ class BookRepository {
       await _apiClient.deleteBook(bookId);
     } catch (e) {
       debugPrint(e.toString());
+    }
+  }
+
+  Future<void> addFavoriteBook(FavoriteBook favoriteBook) async {
+    try {
+      if (await _apiClient.isExistFavoriteBook(favoriteBook)) return;
+      await _apiClient.addFavoriteBook(favoriteBook);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> deleteFavoriteBookById(String favoriteBookId) async {
+    try {
+      await _apiClient.deleteFavoriteBookById(favoriteBookId);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> deleteFavoriteBook(FavoriteBook favoriteBook) async {
+    try {
+      String favoriteBookId = await _apiClient.getFavoriteBookId(favoriteBook);
+      await _apiClient.deleteFavoriteBookById(favoriteBookId);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<Map<String, FavoriteBook>> getFavoriteBooks(String uid) async {
+    try {
+      return await _apiClient.getFavoriteBooks(uid);
+    } catch (e) {
+      debugPrint(e.toString());
+      return {};
+    }
+  }
+
+  Future<bool> isFavoriteBook(FavoriteBook favoriteBook) async {
+    try {
+      return await _apiClient.isExistFavoriteBook(favoriteBook);
+    } catch (e) {
+      debugPrint(e.toString());
+      return false;
     }
   }
 }

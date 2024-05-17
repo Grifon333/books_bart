@@ -1,7 +1,9 @@
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
+import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,7 @@ class BookDetailsState {
   String description = '';
   String imageURL = '';
   String rating = '';
+  bool isFavoriteBook = false;
 
   List<VariantOfBookInfo> variantsOfBook = [];
   int selectVariantOfBook = 0;
@@ -23,6 +26,7 @@ class BookDetailsViewModel extends ChangeNotifier {
   final MainNavigation _mainNavigation = MainNavigation();
   final BookRepository _bookRepository = BookRepository();
   final OrderRepository _orderRepository = OrderRepository();
+  final UserRepository _userRepository = UserRepository();
   final BookDetailsState _state = BookDetailsState();
 
   BookDetailsState get state => _state;
@@ -40,6 +44,7 @@ class BookDetailsViewModel extends ChangeNotifier {
     _setBookInfo(book);
     Map<String, VariantOfBook> variants = data[1];
     _setVariantsOfBookInfo(variants);
+    _state.isFavoriteBook = await _isFavoriteBook();
     notifyListeners();
   }
 
@@ -79,6 +84,12 @@ class BookDetailsViewModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> _isFavoriteBook() async {
+    String uid = (await _userRepository.getCurrentUserData()).uid;
+    FavoriteBook favoriteBook = FavoriteBook(uid: uid, idBook: bookId);
+    return await _bookRepository.isFavoriteBook(favoriteBook);
+  }
+
   void onPressedReturn() {
     _mainNavigation.popFromBookDetailsScreen(context);
   }
@@ -93,6 +104,19 @@ class BookDetailsViewModel extends ChangeNotifier {
       bookId,
       _state.variantsOfBook[_state.selectVariantOfBook].id,
     );
+  }
+
+  Future<void> onPressedFavorite() async {
+    String uid = (await _userRepository.getCurrentUserData()).uid;
+    FavoriteBook favoriteBook = FavoriteBook(uid: uid, idBook: bookId);
+    final oldFavorite = _state.isFavoriteBook;
+    if (oldFavorite) {
+      await _bookRepository.deleteFavoriteBook(favoriteBook);
+    } else {
+      await _bookRepository.addFavoriteBook(favoriteBook);
+    }
+    _state.isFavoriteBook ^= true;
+    notifyListeners();
   }
 }
 

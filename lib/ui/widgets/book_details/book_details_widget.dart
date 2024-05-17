@@ -248,14 +248,15 @@ class _AdditionInfoTileWidget extends StatelessWidget {
 class _SaveButtonWidget extends StatelessWidget {
   const _SaveButtonWidget();
 
-  void onPressed() => debugPrint('Save');
-
   @override
   Widget build(BuildContext context) {
+    final model = context.read<BookDetailsViewModel>();
+    final isFavorite =
+        context.select((BookDetailsViewModel vm) => vm.state.isFavoriteBook);
     return FilledButton(
-      onPressed: onPressed,
+      onPressed: model.onPressedFavorite,
       style: const ButtonStyle(shape: MaterialStatePropertyAll(CircleBorder())),
-      child: const Icon(Icons.bookmark_outline),
+      child: Icon(isFavorite ? Icons.bookmark : Icons.bookmark_outline),
     );
   }
 }

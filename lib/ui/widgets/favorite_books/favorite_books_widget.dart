@@ -1,5 +1,7 @@
 import 'package:books_bart/ui/widgets/favorite_books/favorite_books_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class FavoriteBooksWidget extends StatelessWidget {
   const FavoriteBooksWidget({super.key});
@@ -24,12 +26,16 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        _TitleWidget(),
-        SizedBox(height: 16),
-        _BooksListWidget(),
-      ],
+    final model = context.read<FavoriteBooksViewModel>();
+    return RefreshIndicator(
+      onRefresh: model.onRefresh,
+      child: ListView(
+        children: const [
+          _TitleWidget(),
+          SizedBox(height: 16),
+          _BooksListWidget(),
+        ],
+      ),
     );
   }
 }
@@ -41,6 +47,7 @@ class _TitleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text(
       'Favorite books',
+      textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: 32,
         fontWeight: FontWeight.w600,
@@ -55,84 +62,95 @@ class _BooksListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<BookInfo> books = [
-      BookInfo(title: 'Book1', author: 'Author1', rating: 3, price: '\$20'),
-      BookInfo(title: 'Book2', author: 'Author2', rating: 4, price: '\$24'),
-      BookInfo(title: 'Book3', author: 'Author3', rating: 4, price: '\$27'),
-      BookInfo(title: 'Book4', author: 'Author4', rating: 4, price: '\$45'),
-      BookInfo(title: 'Book5', author: 'Author5', rating: 5, price: '\$32'),
-      BookInfo(title: 'Book6', author: 'Author6', rating: 3, price: '\$30'),
-      BookInfo(title: 'Book7', author: 'Author7', rating: 4, price: '\$29'),
-    ];
-    return Expanded(
-      child: ListView.separated(
-        itemBuilder: (context, index) => _BookCartWidget(books[index]),
-        separatorBuilder: (context, index) => const SizedBox(height: 8),
-        itemCount: books.length,
-      ),
-    );
+    final model = context.watch<FavoriteBooksViewModel>();
+    List<BookInfo> books = model.state.books;
+    return books.isEmpty
+        ? const _EmptyListWidget()
+        : Column(
+            children: List.generate(
+              books.length,
+              (index) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _BookCartWidget(index),
+              ),
+            ),
+          );
   }
 }
 
 class _BookCartWidget extends StatelessWidget {
-  final BookInfo _book;
+  final int index;
 
-  const _BookCartWidget(this._book);
-
-  void onTap() => debugPrint('Title: ${_book.title}, price: ${_book.price}');
+  const _BookCartWidget(this.index);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 4,
-            )
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            onTap: onTap,
-            child: SizedBox(
-              height: 152,
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Stack(
-                  children: [
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 78,
-                          height: 120,
-                          child: ColoredBox(color: Colors.grey),
-                        ),
-                        const SizedBox(width: 24),
-                        SizedBox(
-                          width: 200,
-                          child: _MainBookInfoWidget(_book),
-                        )
-                      ],
-                    ),
-                    Positioned(
-                      right: 0,
-                      top: 0,
-                      child: _FavoriteButtonWidget(_book.isFavorite),
-                    ),
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: _PriceWidget(_book.price),
-                    ),
-                  ],
+    final model = context.read<FavoriteBooksViewModel>();
+    final book = model.state.books[index];
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (_) => model.onTapDelete(index),
+            foregroundColor: Colors.red,
+            backgroundColor: const Color(0xFFF5EEE5),
+            icon: Icons.delete,
+            label: 'Delete',
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey,
+                blurRadius: 4,
+              )
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              onTap: () => model.onTapFavoriteBook(index),
+              child: SizedBox(
+                height: 152,
+                width: double.infinity,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Stack(
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(
+                            width: 78,
+                            height: 120,
+                            child: ColoredBox(color: Colors.grey),
+                          ),
+                          const SizedBox(width: 24),
+                          SizedBox(
+                            width: 200,
+                            child: _MainBookInfoWidget(book),
+                          )
+                        ],
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: _FavoriteButtonWidget(book.isFavorite),
+                      ),
+                      // Positioned(
+                      //   right: 0,
+                      //   bottom: 0,
+                      //   child: _PriceWidget(_book.price),
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -152,14 +170,15 @@ class _MainBookInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Text(
           _book.title,
           overflow: TextOverflow.ellipsis,
+          maxLines: 3,
           style: const TextStyle(
             color: Color(0xFF7E675E),
-            fontSize: 24,
+            fontSize: 22,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -172,14 +191,14 @@ class _MainBookInfoWidget extends StatelessWidget {
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            for (int i = 0; i < _book.rating; i++) const Icon(Icons.star),
-            for (int i = _book.rating; i < 5; i++)
-              const Icon(Icons.star_outline),
-          ],
-        ),
+        // const SizedBox(height: 4),
+        // Row(
+        //   children: [
+        //     for (int i = 0; i < _book.rating; i++) const Icon(Icons.star),
+        //     for (int i = _book.rating; i < 5; i++)
+        //       const Icon(Icons.star_outline),
+        //   ],
+        // ),
       ],
     );
   }
@@ -217,6 +236,31 @@ class _PriceWidget extends StatelessWidget {
         fontSize: 24,
         fontWeight: FontWeight.w600,
         color: Color(0xFF607F9D),
+      ),
+    );
+  }
+}
+
+class _EmptyListWidget extends StatelessWidget {
+  const _EmptyListWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: double.infinity,
+      child: Column(
+        children: [
+          SizedBox(height: 200),
+          Icon(
+            Icons.cleaning_services_rounded,
+            size: 160,
+            color: Colors.black26,
+          ),
+          Text(
+            'Empty',
+            style: TextStyle(fontSize: 24, color: Colors.black26),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/book_in_order.dart';
+import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/firebase_options.dart';
@@ -573,6 +574,114 @@ class ApiClient {
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
         'Error deleting Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> addFavoriteBook(FavoriteBook favoriteBook) async {
+    try {
+      await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .add(favoriteBook);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<bool> isExistFavoriteBook(FavoriteBook favoriteBook) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .where('id_book', isEqualTo: favoriteBook.idBook)
+          .where('uid', isEqualTo: favoriteBook.uid)
+          .get();
+      return querySnapshot.docs.isNotEmpty;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> deleteFavoriteBookById(String favoriteBookId) async {
+    try {
+      await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .doc(favoriteBookId)
+          .delete();
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error deleting FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String> getFavoriteBookId(FavoriteBook favoriteBook) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .where('id_book', isEqualTo: favoriteBook.idBook)
+          .where('uid', isEqualTo: favoriteBook.uid)
+          .get();
+      return querySnapshot.docs[0].id;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error deleting FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Map<String, FavoriteBook>> getFavoriteBooks(String uid) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .where('uid', isEqualTo: uid)
+          .get();
+      Map<String, FavoriteBook> favoriteBooks = {};
+      for (var doc in querySnapshot.docs) {
+        favoriteBooks.addAll({doc.id: doc.data()});
+      }
+      return favoriteBooks;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding FavoriteBook.',
       );
     } catch (e) {
       throw Exception(e.toString());

@@ -30,7 +30,6 @@ class MainTheme {
           borderRadius: BorderRadius.all(Radius.circular(10)),
         ),
       ),
-      overlayColor: MaterialStatePropertyAll(Colors.transparent),
       padding: MaterialStatePropertyAll(EdgeInsets.zero),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       iconColor: MaterialStatePropertyAll(color2),
