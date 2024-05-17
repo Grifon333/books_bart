@@ -87,4 +87,12 @@ class OrderRepository {
       debugPrint(e.toString());
     }
   }
+
+  Future<void> deleteBookInOrder(String bookInOrderId) async {
+    try {
+      await _apiClient.deleteBookInOrder(bookInOrderId);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }

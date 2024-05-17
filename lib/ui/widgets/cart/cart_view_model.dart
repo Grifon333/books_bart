@@ -73,6 +73,7 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void onTapDelete(int index) {
+    _orderRepository.deleteBookInOrder(_state.booksInfo[index].id);
     _state.booksInfo.removeAt(index);
     notifyListeners();
   }

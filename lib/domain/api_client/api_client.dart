@@ -558,4 +558,24 @@ class ApiClient {
       throw Exception(e.toString());
     }
   }
+
+  Future<void> deleteBookInOrder(String bookInOrderId) async {
+    try {
+      await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .doc(bookInOrderId)
+          .delete();
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error deleting Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 }
