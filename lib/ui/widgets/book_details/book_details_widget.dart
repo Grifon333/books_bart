@@ -112,6 +112,8 @@ class _BookInfoWidget extends StatelessWidget {
                   _DescriptionWidget(),
                   SizedBox(height: 20),
                   _VariantsOfBookInfoWidget(),
+                  SizedBox(height: 20),
+                  _ReviewsWidget(),
                 ],
               ),
             ),
@@ -320,19 +322,29 @@ class _VariantsOfBookInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final countVariants =
         context.watch<BookDetailsViewModel>().state.variantsOfBook.length;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(
-          countVariants,
-          (index) => Row(
-            children: [
-              _VariantOfBookInfoWidget(index),
-              const SizedBox(width: 10),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Variants of book',
+          style: TextStyle(fontSize: 18),
+        ),
+        const SizedBox(height: 10),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: List.generate(
+              countVariants,
+              (index) => Row(
+                children: [
+                  _VariantOfBookInfoWidget(index),
+                  const SizedBox(width: 10),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -414,6 +426,107 @@ class _VariantOfBookInfoWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ReviewsWidget extends StatelessWidget {
+  const _ReviewsWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final countReviews =
+        context.watch<BookDetailsViewModel>().state.reviews.length;
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Reviews',
+            style: TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 10),
+          const _AddReviewFormWidget(),
+          const SizedBox(height: 20),
+          Column(
+            children: List.generate(
+              countReviews,
+              (index) => _ReviewWidget(index),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddReviewFormWidget extends StatelessWidget {
+  const _AddReviewFormWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<BookDetailsViewModel>();
+    final countStars =
+        context.select((BookDetailsViewModel vm) => vm.state.countStars);
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                onChanged: model.onChangedReviewText,
+              ),
+            ),
+            TextButton(
+              onPressed: model.onPressedAddReview,
+              child: const Text('Add'),
+            ),
+          ],
+        ),
+        Row(
+          children: List.generate(
+            5,
+            (index) => IconButton(
+              onPressed: () => model.onChangeCountStars(index),
+              icon: Icon(index < countStars ? Icons.star : Icons.star_outline),
+              visualDensity: VisualDensity.compact,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ReviewWidget extends StatelessWidget {
+  final int index;
+
+  const _ReviewWidget(this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    final review = context.watch<BookDetailsViewModel>().state.reviews[index];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: List.generate(
+            5,
+            (index) => Icon(
+              index < review.countStars ? Icons.star : Icons.star_outline,
+            ),
+          ),
+        ),
+        Text(
+          review.text,
+          style: const TextStyle(fontSize: 16),
+        ),
+        Text(
+          review.author,
+          style: const TextStyle(color: Colors.black54),
+        ),
+        const SizedBox(height: 10),
+      ],
     );
   }
 }

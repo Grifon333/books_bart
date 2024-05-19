@@ -7,15 +7,9 @@ class Book {
   String description;
   String category;
   String imageURL;
-  Map<String, int> rating;
+  Map<int, int> rating;
 
-  static const Map<String, int> _emptyRating = {
-    '1': 0,
-    '2': 0,
-    '3': 0,
-    '4': 0,
-    '5': 0
-  };
+  static const Map<int, int> _emptyRating = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
 
   Book({
     required this.title,
@@ -43,10 +37,13 @@ class Book {
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    final ratingData = (data?['rating'] is Map<String, int>)
-        ? Map.from(data?['rating']) as Map<String, int>
-        : _emptyRating;
-
+    final ratingData = data?['rating'] as Map<String, dynamic>;
+    final Map<int, int> rating = ratingData.map(
+      (key, value) => MapEntry(
+        int.tryParse(key.toString()) ?? 0,
+        int.tryParse(value.toString()) ?? 0,
+      ),
+    );
     return Book(
       title: data?['title'],
       authors: data?['authors'],
@@ -55,7 +52,7 @@ class Book {
       category: data?['category'],
       imageURL: data?['image_url'] ??
           'https://edit.org/images/cat/book-covers-big-2019101610.jpg',
-      rating: ratingData,
+      rating: rating,
     );
   }
 
@@ -67,7 +64,7 @@ class Book {
       'description': description,
       'category': category,
       'image_url': imageURL,
-      'rating': rating,
+      'rating': rating.map((key, value) => MapEntry(key.toString(), value)),
     };
   }
 
@@ -78,7 +75,7 @@ class Book {
     String? description,
     String? category,
     String? imageURL,
-    Map<String, int>? rating,
+    Map<int, int>? rating,
   }) {
     return Book(
       title: title ?? this.title,

@@ -3,13 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Review {
   String body;
   int rating;
-  String uid;
+  String username;
   String idBook;
 
   Review({
     required this.body,
     required this.rating,
-    required this.uid,
+    required this.username,
     required this.idBook,
   });
 
@@ -21,7 +21,7 @@ class Review {
     return Review(
       body: data?['body'],
       rating: data?['rating'],
-      uid: data?['uid'],
+      username: data?['username'],
       idBook: data?['id_book'],
     );
   }
@@ -30,7 +30,7 @@ class Review {
     return {
       'body': body,
       'rating': rating,
-      'uid': uid,
+      'username': username,
       'id_book': idBook,
     };
   }
@@ -40,7 +40,7 @@ class Review {
     return 'Review {\n'
         'body: $body\n'
         'rating: $rating\n'
-        'uid: $uid\n'
+        'username: $username\n'
         'id book: $idBook\n'
         '}';
   }

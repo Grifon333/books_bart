@@ -1,6 +1,7 @@
 import 'package:books_bart/domain/api_client/api_client.dart';
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/favorite_book.dart';
+import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:flutter/material.dart';
 
@@ -95,6 +96,23 @@ class BookRepository {
     } catch (e) {
       debugPrint(e.toString());
       return false;
+    }
+  }
+
+  Future<void> addReview(Review review) async {
+    try {
+      await _apiClient.addReview(review);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<List<Review>> getReviews(String bookId) async {
+    try {
+      return await _apiClient.getReviews(bookId);
+    } catch (e) {
+      debugPrint(e.toString());
+      return [];
     }
   }
 }

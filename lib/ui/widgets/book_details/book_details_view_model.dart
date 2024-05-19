@@ -1,5 +1,6 @@
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/favorite_book.dart';
+import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
@@ -15,6 +16,9 @@ class BookDetailsState {
   String imageURL = '';
   String rating = '';
   bool isFavoriteBook = false;
+  String reviewText = '';
+  int countStars = 0;
+  List<ReviewInfo> reviews = [];
 
   List<VariantOfBookInfo> variantsOfBook = [];
   int selectVariantOfBook = 0;
@@ -45,6 +49,7 @@ class BookDetailsViewModel extends ChangeNotifier {
     Map<String, VariantOfBook> variants = data[1];
     _setVariantsOfBookInfo(variants);
     _state.isFavoriteBook = await _isFavoriteBook();
+    await _getReviews();
     notifyListeners();
   }
 
@@ -57,7 +62,7 @@ class BookDetailsViewModel extends ChangeNotifier {
     double rating = 0;
     int count = 0;
     for (var ratingEntry in book.rating.entries) {
-      int countStars = int.parse(ratingEntry.key);
+      int countStars = ratingEntry.key;
       int countEvaluation = ratingEntry.value;
       rating += countStars * countEvaluation;
       count += countEvaluation;
@@ -70,6 +75,7 @@ class BookDetailsViewModel extends ChangeNotifier {
   }
 
   void _setVariantsOfBookInfo(Map<String, VariantOfBook> variants) {
+    _state.variantsOfBook.clear();
     for (var variantEntry in variants.entries) {
       VariantOfBook variantOfBook = variantEntry.value;
       _state.variantsOfBook.add(VariantOfBookInfo(
@@ -88,6 +94,20 @@ class BookDetailsViewModel extends ChangeNotifier {
     String uid = (await _userRepository.getCurrentUserData()).uid;
     FavoriteBook favoriteBook = FavoriteBook(uid: uid, idBook: bookId);
     return await _bookRepository.isFavoriteBook(favoriteBook);
+  }
+
+  Future<void> _getReviews() async {
+    _state.reviews.clear();
+    List<Review> reviews = await _bookRepository.getReviews(bookId);
+    for (Review review in reviews) {
+      _state.reviews.add(
+        ReviewInfo(
+          countStars: review.rating,
+          text: review.body,
+          author: review.username,
+        ),
+      );
+    }
   }
 
   void onPressedReturn() {
@@ -118,6 +138,29 @@ class BookDetailsViewModel extends ChangeNotifier {
     _state.isFavoriteBook ^= true;
     notifyListeners();
   }
+
+  void onChangeCountStars(int index) {
+    _state.countStars = index + 1;
+    notifyListeners();
+  }
+
+  void onChangedReviewText(String value) {
+    _state.reviewText = value;
+    notifyListeners();
+  }
+
+  Future<void> onPressedAddReview() async {
+    String username =
+        (await _userRepository.getCurrentUserData()).name ?? 'no name';
+    Review review = Review(
+      body: _state.reviewText,
+      rating: _state.countStars,
+      username: username,
+      idBook: bookId,
+    );
+    await _bookRepository.addReview(review);
+    await _init();
+  }
 }
 
 class VariantOfBookInfo {
@@ -137,5 +180,17 @@ class VariantOfBookInfo {
     required this.publisher,
     required this.bindingType,
     required this.publicationYear,
+  });
+}
+
+class ReviewInfo {
+  int countStars;
+  String text;
+  String author;
+
+  ReviewInfo({
+    required this.countStars,
+    required this.text,
+    required this.author,
   });
 }

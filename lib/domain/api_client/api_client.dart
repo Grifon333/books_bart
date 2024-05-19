@@ -2,6 +2,7 @@ import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/book_in_order.dart';
 import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/order.dart';
+import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as cloud_firestore;
@@ -253,14 +254,14 @@ class ApiClient {
 
   Future<void> addBook(Book book, List<VariantOfBook> variants) async {
     try {
-      final bookId = await _firebaseFirestore
+      final documentReference = await _firebaseFirestore
           .collection('books')
           .withConverter(
             fromFirestore: Book.fromFirestore,
             toFirestore: (Book book, options) => book.toFirestore(),
           )
-          .add(book)
-          .then((value) => value.id);
+          .add(book);
+      final bookId = documentReference.id;
       for (VariantOfBook variant in variants) {
         _addVariantOfBook(bookId, variant);
       }
@@ -656,7 +657,7 @@ class ApiClient {
       return querySnapshot.docs[0].id;
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
-        'Error deleting FavoriteBook.',
+        'Error getting FavoriteBook by ID.',
       );
     } catch (e) {
       throw Exception(e.toString());
@@ -681,7 +682,78 @@ class ApiClient {
       return favoriteBooks;
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
-        'Error adding FavoriteBook.',
+        'Error getting FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> addReview(Review review) async {
+    try {
+      await _firebaseFirestore
+          .collection('review')
+          .withConverter(
+            fromFirestore: Review.fromFirestore,
+            toFirestore: (Review review, options) => review.toFirestore(),
+          )
+          .add(review);
+      _updateBookRating(review.idBook, review.rating);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding Review.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<void> _updateBookRating(String bookId, int countStars) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('books')
+          .withConverter(
+            fromFirestore: Book.fromFirestore,
+            toFirestore: (Book book, options) => book.toFirestore(),
+          )
+          .doc(bookId)
+          .get();
+      Map<String, int> rating = querySnapshot.data()!.rating.map(
+            (key, value) => MapEntry(key.toString(), value),
+          );
+      final oldCount = rating['$countStars'] ?? 0;
+      rating['$countStars'] = oldCount + 1;
+      await _firebaseFirestore
+          .collection('books')
+          .withConverter(
+            fromFirestore: Book.fromFirestore,
+            toFirestore: (Book book, options) => book.toFirestore(),
+          )
+          .doc(bookId)
+          .update({'rating': rating});
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error adding Review.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<List<Review>> getReviews(String bookId) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('review')
+          .withConverter(
+            fromFirestore: Review.fromFirestore,
+            toFirestore: (Review review, options) => review.toFirestore(),
+          )
+          .where('id_book', isEqualTo: bookId)
+          .get();
+      return querySnapshot.docs.map((e) => e.data()).toList();
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting Reviews.',
       );
     } catch (e) {
       throw Exception(e.toString());
