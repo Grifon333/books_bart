@@ -34,6 +34,7 @@ class FavoriteBooksViewModel extends ChangeNotifier {
           title: book.title,
           author: book.authors,
           bookId: favoriteBook.value.idBook,
+          imageURL: book.imageURL,
         ),
       );
     }
@@ -64,6 +65,7 @@ class BookInfo {
   String author;
   bool isFavorite;
   String bookId;
+  String imageURL;
 
   BookInfo({
     required this.id,
@@ -73,5 +75,6 @@ class BookInfo {
     this.isFavorite = true,
     // required this.price,
     required this.bookId,
+    required this.imageURL,
   });
 }

@@ -33,13 +33,19 @@ class CartViewModel extends ChangeNotifier {
       Book book = bookInfo[0];
       VariantOfBook variantOfBook = (bookInfo[1]
           as Map<String, VariantOfBook>)[bookInOrder.idVariantOfBook]!;
+      String format = variantOfBook.format;
+      String? bindingType = variantOfBook.bindingType;
+      String type = bindingType == null ? format : '$format ($bindingType)';
       _state.booksInfo.add(
         BookInfo(
           id: bookInOrderEntry.key,
+          bookId: bookInOrder.idBook,
           title: book.title,
           author: book.authors,
           price: '${variantOfBook.price}',
           count: bookInOrder.count,
+          type: type,
+          imageURL: book.imageURL,
         ),
       );
     }
@@ -51,6 +57,8 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void onPressedCountIncrement(int index) {
+    String type = _state.booksInfo[index].type;
+    if (type == 'e-book' || type == 'audio') return;
     int newCount = _state.booksInfo[index].count + 1;
     if (newCount > 10) return;
     _state.booksInfo[index].count = newCount;
@@ -62,6 +70,8 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void onPressedCountDecrement(int index) {
+    String type = _state.booksInfo[index].type;
+    if (type == 'e-book' || type == 'audio') return;
     int newCount = _state.booksInfo[index].count - 1;
     if (newCount < 1) return;
     _state.booksInfo[index].count = newCount;
@@ -85,22 +95,35 @@ class CartViewModel extends ChangeNotifier {
   Future<void> onRefresh() async {
     await _init();
   }
+
+  void onTapCartBookInfo(int index) {
+    _mainNavigation.goToBookDetailsScreen(
+      context,
+      _state.booksInfo[index].bookId,
+    );
+  }
 }
 
 class BookInfo {
   String id;
+  String bookId;
   String title;
   String author;
   String price;
   int count;
+  String type;
+  String imageURL;
 
   String countStr() => '$count';
 
   BookInfo({
     required this.id,
+    required this.bookId,
     required this.title,
     required this.author,
     required this.price,
     this.count = 1,
+    required this.type,
+    required this.imageURL,
   });
 }

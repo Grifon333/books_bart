@@ -119,7 +119,7 @@ class _BookCartWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               onTap: () => model.onTapFavoriteBook(index),
               child: SizedBox(
-                height: 152,
+                height: 160,
                 width: double.infinity,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -127,10 +127,10 @@ class _BookCartWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const SizedBox(
-                            width: 78,
-                            height: 120,
-                            child: ColoredBox(color: Colors.grey),
+                          SizedBox(
+                            width: 80,
+                            height: 128,
+                            child: Image.network(book.imageURL),
                           ),
                           const SizedBox(width: 24),
                           SizedBox(

@@ -56,11 +56,11 @@ class _BodyWidget extends StatelessWidget {
                     Icon(
                       Icons.cleaning_services_rounded,
                       size: 160,
-                      color: Colors.grey,
+                      color: Colors.black26,
                     ),
                     Text(
                       'Empty',
-                      style: TextStyle(fontSize: 24, color: Colors.grey),
+                      style: TextStyle(fontSize: 24, color: Colors.black26),
                     ),
                   ],
                 ),
@@ -92,8 +92,6 @@ class _BookCartWidget extends StatelessWidget {
   final int index;
 
   const _BookCartWidget(this.index);
-
-  void onTap() => debugPrint('Book in Order (index: $index)');
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +126,9 @@ class _BookCartWidget extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              onTap: onTap,
+              onTap: () => model.onTapCartBookInfo(index),
               child: SizedBox(
-                height: 152,
+                height: 160,
                 width: double.infinity,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -138,10 +136,12 @@ class _BookCartWidget extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const SizedBox(
-                            width: 78,
-                            height: 120,
-                            child: ColoredBox(color: Colors.grey),
+                          SizedBox(
+                            width: 80,
+                            height: 128,
+                            child: Image.network(
+                              model.state.booksInfo[index].imageURL,
+                            ),
                           ),
                           const SizedBox(width: 24),
                           SizedBox(
@@ -192,6 +192,13 @@ class _MainBookInfoWidget extends StatelessWidget {
             color: Color(0xFFF06267),
             fontSize: 16,
             fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(
+          bookInfo.type,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
           ),
         ),
         const Spacer(),

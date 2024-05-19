@@ -175,20 +175,26 @@ class _RowInfoWidget extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: size,
-            color: titleColor,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          flex: 4,
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: size,
+              color: titleColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
-        Text(
-          info,
-          style: TextStyle(
-            fontSize: size,
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          flex: 1,
+          child: Text(
+            info,
+            style: TextStyle(
+              fontSize: size,
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
