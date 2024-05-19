@@ -56,21 +56,27 @@ class _BookCoverWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageURL = context.watch<BookDetailsViewModel>().state.imageURL;
     return SizedBox(
-      height: 300,
+      height: 350,
       width: double.infinity,
       child: ColoredBox(
         color: Colors.white,
         child: Center(
-          child: SizedBox(
-            height: 250,
-            width: 190,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            child: imageURL == null
+                ? const SizedBox(
+                    height: 320,
+                    width: 200,
+                    child: ColoredBox(color: Colors.black12),
+                  )
+                : Image.network(
+                    imageURL,
+                    height: 320,
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
       ),
@@ -190,7 +196,7 @@ class _AdditionInfoWidget extends StatelessWidget {
     final List<List<String>> additionalInfoList = [
       ['Rating', rating],
       ['Pages', countPage],
-      ['Language', 'EN'],
+      ['Language', 'UA'],
     ];
     return DecoratedBox(
       decoration: BoxDecoration(

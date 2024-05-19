@@ -13,7 +13,7 @@ class BookDetailsState {
   String authors = '';
   String countPage = '';
   String description = '';
-  String imageURL = '';
+  String? imageURL;
   String rating = '';
   bool isFavoriteBook = false;
   String reviewText = '';
