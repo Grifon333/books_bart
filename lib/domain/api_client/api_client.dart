@@ -145,10 +145,19 @@ class ApiClient {
     }
   }
 
-  // Future<void> updatePassword(String password) async {
-  //   _firebaseAuth?.sendPasswordResetEmail(email: '');
-  //   await _firebaseAuth?.currentUser?.updatePassword(password);
-  // }
+  Future<void> updatePassword(String password) async {
+    try {
+      // await _firebaseAuth.sendPasswordResetEmail(
+      //   email: _firebaseAuth.currentUser?.email ?? '',
+      // );
+      await _firebaseAuth.currentUser?.updatePassword(password);
+    } on FirebaseAuthException catch(e) {
+      throw Exception(e.message);
+      // throw ApiClientFirebaseAuthException('Error with server. Try late.');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
 
   Future<void> updatePhoneNumber(String phoneNumber) async {
     try {

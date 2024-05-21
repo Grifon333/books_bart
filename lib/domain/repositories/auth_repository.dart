@@ -18,20 +18,19 @@ class AuthRepository {
         password,
       );
       if (userCredential != null &&
-          userCredential.user != null &&
-          userCredential.credential != null) {
+          userCredential.user != null) {
         final userData = User(
           uid: userCredential.user!.uid,
           name: userCredential.user!.displayName,
           email: email,
           phoneNumber: userCredential.user!.phoneNumber,
-          sighInMethod: userCredential.credential!.signInMethod,
+          sighInMethod: userCredential.credential?.signInMethod ?? '',
           urlPhoto: userCredential.user!.photoURL,
         );
         await _userDataProvider.setUserData(userData);
       }
     } on ApiClientFirebaseAuthException catch (e) {
-      debugPrint('ApiClientException: $e');
+      throw ApiClientFirebaseAuthException(e.massage);
     }
   }
 
@@ -75,7 +74,7 @@ class AuthRepository {
         await _userDataProvider.setUserData(userData);
       }
     } on ApiClientFirebaseAuthException catch (e) {
-      debugPrint('ApiClientException: $e');
+      throw ApiClientFirebaseAuthException(e.massage);
     }
   }
 

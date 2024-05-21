@@ -19,4 +19,8 @@ class UserDataProvider {
     }
     return null;
   }
+
+  Future<void> deleteUserData() async {
+    _storage.delete(key: 'user');
+  }
 }

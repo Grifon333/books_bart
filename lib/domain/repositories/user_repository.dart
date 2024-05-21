@@ -26,14 +26,19 @@ class UserRepository {
     _userDataProvider.setUserData(user);
   }
 
-  // Future<void> updatePassword(String password) async {
-  //   await _apiClient.updatePassword(password);
-  // }
+  Future<void> updatePassword(String password) async {
+    await _apiClient.updatePassword(password);
+  }
 
   Future<void> updatePhotoURL(String photoURL) async {
     await _apiClient.updatePhoto(photoURL);
     User user = await getCurrentUserData()
       ..urlPhoto = photoURL;
     _userDataProvider.setUserData(user);
+  }
+
+  Future<void> logout() async {
+    await _apiClient.logout();
+    _userDataProvider.deleteUserData();
   }
 }
