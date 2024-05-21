@@ -1,5 +1,4 @@
 import 'package:books_bart/domain/repositories/user_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class ErrorsMassage {
@@ -34,7 +33,6 @@ class ProfileViewModel extends ChangeNotifier {
   final BuildContext context;
   final ProfileState _state = ProfileState();
   final UserRepository _userRepository = UserRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
 
   ProfileViewModel(this.context) {
     _init();
@@ -132,16 +130,9 @@ class ProfileViewModel extends ChangeNotifier {
   Future<void> _changePassword() async {
     try {
       await _userRepository.updatePassword(_state.newPassword);
-      await onPressedLogout();
     } catch (e) {
       _state.newPasswordError = e.toString();
       notifyListeners();
     }
-  }
-
-  Future<void> onPressedLogout() async {
-    await _userRepository.logout();
-    if (!context.mounted) return;
-    _mainNavigation.goToLoginScreen(context);
   }
 }

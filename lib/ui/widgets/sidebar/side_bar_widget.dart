@@ -15,10 +15,15 @@ class SideBarWidget extends StatelessWidget {
             color: Color(0xFF7E675E),
           ),
           child: SafeArea(
-            child: Column(
-              children: [
-                _TitleCardWidget(),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  _TitleCardWidget(),
+                  Divider(height: 20),
+                  _LogoutButtonWidget(),
+                ],
+              ),
             ),
           ),
         ),
@@ -32,7 +37,7 @@ class _TitleCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.read<SideBarViewModel>();
+    final model = context.watch<SideBarViewModel>();
     return ListTile(
       onTap: model.onShowProfile,
       leading: const CircleAvatar(
@@ -42,9 +47,28 @@ class _TitleCardWidget extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      title: const Text(
-        'John Wick',
-        style: TextStyle(color: Colors.white),
+      title: Text(
+        model.state.nickname,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _LogoutButtonWidget extends StatelessWidget {
+  const _LogoutButtonWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<SideBarViewModel>();
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: model.onPressedLogout,
+        child: const Text(
+          'Log out',
+          style: TextStyle(),
+        ),
       ),
     );
   }
