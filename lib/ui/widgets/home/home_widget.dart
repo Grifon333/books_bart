@@ -24,17 +24,78 @@ class _BodyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    bool isSearch = context.watch<HomeViewModel>().state.isFiltered;
+    return Column(
       children: [
-        SizedBox(height: 48),
-        _TitleWidget(),
-        SizedBox(height: 24),
-        _SearchWidget(),
+        const SizedBox(height: 48),
+        const _TitleWidget(),
+        const SizedBox(height: 24),
+        const _SearchWidget(),
         // SizedBox(height: 36),
         // _GenreListWidget(),
-        SizedBox(height: 24),
-        _ListBookGroupsWidget(),
+        const SizedBox(height: 24),
+        isSearch
+            ? const _FilteredListBooksWidget()
+            : const _ListBookGroupsWidget(),
       ],
+    );
+  }
+}
+
+class _FilteredListBooksWidget extends StatelessWidget {
+  const _FilteredListBooksWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<HomeViewModel>();
+    final books = model.state.filteredBooks;
+    if (books.isEmpty) return const SizedBox.shrink();
+    List<List<BookInfo>> grid = List.generate(
+      (books.length + 1) ~/ 2,
+      (index) => [],
+    );
+    int rowIndex = 0;
+    for (int index = 0; index < books.length; index += 3) {
+      grid[rowIndex].add(books[index]);
+      if (index + 1 < books.length) {
+        grid[rowIndex].add(books[index + 1]);
+      }
+      if (index + 2 < books.length) {
+        grid[rowIndex].add(books[index + 2]);
+      }
+      rowIndex++;
+    }
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (model.state.canReturn)
+                TextButton(
+                  onPressed: model.onPressedShowAllBooks,
+                  child: const Text(
+                    '← show all',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: grid
+                    .map(
+                      (row) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: row.map((el) => _BookTileWidget(el)).toList(),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -59,12 +120,11 @@ class _TitleWidget extends StatelessWidget {
 class _SearchWidget extends StatelessWidget {
   const _SearchWidget();
 
-  void onChanged(String value) => debugPrint(value);
-
   void onPressed() => debugPrint('Filter');
 
   @override
   Widget build(BuildContext context) {
+    final model = context.read<HomeViewModel>();
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xFFF5EEE5),
@@ -80,7 +140,7 @@ class _SearchWidget extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
-              onChanged: onChanged,
+              onChanged: model.onChangeSearchTitle,
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 prefixIcon: Icon(Icons.search, size: 24),
@@ -180,14 +240,10 @@ class _ListBooksInGroupWidget extends StatelessWidget {
 
   const _ListBooksInGroupWidget(this.groupName);
 
-  void onPressed() {
-    debugPrint('See all: $groupName');
-  }
-
   @override
   Widget build(BuildContext context) {
-    final List<BookInfo> booksInfo =
-        context.read<HomeViewModel>().state.books[groupName] ?? [];
+    final model = context.watch<HomeViewModel>();
+    final List<BookInfo> booksInfo = model.state.books[groupName] ?? [];
     return Column(
       children: [
         Row(
@@ -202,8 +258,8 @@ class _ListBooksInGroupWidget extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: onPressed,
-              child: const Text('See all ->'),
+              onPressed: () => model.onPressedBookCategory(groupName),
+              child: const Text('See more →'),
             ),
           ],
         ),
@@ -239,12 +295,13 @@ class _BookTileWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () => model.onTapBookInfo(_bookInfo.id),
       child: SizedBox(
-        width: 104,
+        width: 100,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
-              width: 104,
-              height: 160,
+              width: 100,
+              height: 180,
               child: Image.network(
                 _bookInfo.imageUrl,
                 fit: BoxFit.fitWidth,
@@ -272,7 +329,7 @@ class _BookTileWidget extends StatelessWidget {
                 fontSize: 12,
                 color: Color(0xFFF06267),
               ),
-            )
+            ),
           ],
         ),
       ),

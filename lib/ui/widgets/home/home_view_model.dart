@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 
 class HomeState {
   Map<String, List<BookInfo>> books = {};
-
-  HomeState();
+  List<BookInfo> filteredBooks = [];
+  String searchTitle = '';
+  bool isFiltered = false;
+  bool canReturn = false;
 }
 
 class HomeViewModel extends ChangeNotifier {
@@ -45,6 +47,9 @@ class HomeViewModel extends ChangeNotifier {
       }
     }
     _state.books = booksByCategory;
+    for (var booksInCategory in booksByCategory.values) {
+      _state.filteredBooks.addAll(booksInCategory);
+    }
     notifyListeners();
   }
 
@@ -54,6 +59,51 @@ class HomeViewModel extends ChangeNotifier {
 
   void onTapBookInfo(String bookId) {
     _mainNavigation.goToBookDetailsScreen(context, bookId);
+  }
+
+  void onChangeSearchTitle(String value) {
+    value = value.trim();
+    _state.searchTitle = value;
+    if (value.isNotEmpty) {
+      _filterBooksByTitle();
+      _state.isFiltered = true;
+    }
+    else {
+      _state.isFiltered = false;
+    }
+    notifyListeners();
+  }
+
+  void _filterBooksByTitle() {
+    _state.filteredBooks.clear();
+    List<BookInfo> filteredBooks = [];
+    String searchTitle = _state.searchTitle.toLowerCase();
+    for (var bookGroup in _state.books.values) {
+      for (var book in bookGroup) {
+        if (book.title.toLowerCase().contains(searchTitle)) {
+          filteredBooks.add(book);
+        }
+      }
+    }
+    _state.filteredBooks = filteredBooks;
+  }
+
+  void onPressedBookCategory(String category) {
+    _filterBooksByCategory(category);
+    _state.isFiltered = true;
+    _state.canReturn = true;
+    notifyListeners();
+  }
+
+  void onPressedShowAllBooks() {
+    _state.isFiltered = false;
+    _state.canReturn = false;
+    notifyListeners();
+  }
+
+  void _filterBooksByCategory(String category) {
+    _state.filteredBooks.clear();
+    _state.filteredBooks.addAll(_state.books[category] ?? []);
   }
 }
 
