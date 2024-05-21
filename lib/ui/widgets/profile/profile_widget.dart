@@ -101,11 +101,14 @@ class _ImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageURL = context.select((ProfileViewModel vm) => vm.state.imageURL);
-    return ClipOval(
-      child: Image(
-        image: NetworkImage(imageURL),
-        height: 150,
-        width: 150,
+    return SizedBox(
+      width: 120,
+      height: 120,
+      child: ClipOval(
+        child: FittedBox(
+          fit: BoxFit.fill,
+          child: Image.network(imageURL),
+        ),
       ),
     );
   }
@@ -211,9 +214,18 @@ class _NewPasswordFormWidget extends StatelessWidget {
               errorText: model.state.newPasswordError,
               isEdit: true,
             ),
-            FilledButton(
-              onPressed: model.onPressedSubmitChangePassword,
-              child: const Text('Submit'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                FilledButton(
+                  onPressed: model.onPressedCancelChangePassword,
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: model.onPressedSubmitChangePassword,
+                  child: const Text('Submit'),
+                ),
+              ],
             ),
           ],
         ),

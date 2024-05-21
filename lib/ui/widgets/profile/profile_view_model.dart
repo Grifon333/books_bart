@@ -116,6 +116,11 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void onPressedCancelChangePassword() {
+    _state.isChangePassword = false;
+    notifyListeners();
+  }
+
   void onChangedPassword(String value) {
     value = value.trim();
     _state.newPassword = value;
