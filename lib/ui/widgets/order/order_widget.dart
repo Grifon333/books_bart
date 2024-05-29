@@ -150,7 +150,7 @@ class _TotalPriceWidget extends StatelessWidget {
     final state = context.watch<OrderViewModel>().state;
     return _RowInfoWidget(
       title: 'Total',
-      info: state.total,
+      info: state.totalPriceStr,
       size: 24,
       titleColor: Colors.white,
     );

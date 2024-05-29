@@ -11,7 +11,8 @@ class OrderState {
   String subtotal = '';
   String taxes = '';
   String discount = '';
-  String total = '';
+  String totalPriceStr = '';
+  double totalPrice = 0;
 }
 
 class OrderViewModel extends ChangeNotifier {
@@ -29,7 +30,7 @@ class OrderViewModel extends ChangeNotifier {
 
   Future<void> _init() async {
     Map<String, BookInOrder> booksInOrder =
-        await _orderRepository.getBooksInOrder();
+        await _orderRepository.getBooksInCreatingOrder();
     for (var bookInOrder in booksInOrder.values) {
       var bookInfo = await _getBookInfoById(bookInOrder.idBook);
       Book book = bookInfo[0];
@@ -60,11 +61,12 @@ class OrderViewModel extends ChangeNotifier {
     _state.taxes = '\$ 9';
     _state.discount = '- \$ 10';
     double totalPrice = subtotal + 9 - 10;
-    _state.total = '$totalPrice';
+    _state.totalPrice = totalPrice;
+    _state.totalPriceStr = '$totalPrice';
   }
 
   Future<void> onPressedSubmitOrder() async {
-    await _orderRepository.submitOrder();
+    await _orderRepository.submitOrder(_state.totalPrice);
     if (!context.mounted) return;
     _mainNavigation.popFromOrderScreen(context);
   }

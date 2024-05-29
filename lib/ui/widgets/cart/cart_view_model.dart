@@ -26,7 +26,7 @@ class CartViewModel extends ChangeNotifier {
   Future<void> _init() async {
     _state.booksInfo.clear();
     Map<String, BookInOrder> booksInOrder =
-        await _orderRepository.getBooksInOrder();
+        await _orderRepository.getBooksInCreatingOrder();
     for (var bookInOrderEntry in booksInOrder.entries) {
       BookInOrder bookInOrder = bookInOrderEntry.value;
       var bookInfo = await _getBookInfoById(bookInOrder.idBook);
