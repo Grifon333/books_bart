@@ -15,6 +15,7 @@ class MainNavigationNameRoute {
   static const order = '/cart/order';
   static const profile = '/profile';
   static const bookHandling = '/book_handling';
+  static const history = '/history';
 }
 
 class MainNavigation {
@@ -29,8 +30,6 @@ class MainNavigation {
     MainNavigationNameRoute.favoriteBooks: (_) =>
         _screenFactory.makeFavoriteBooks(),
     MainNavigationNameRoute.settings: (_) => _screenFactory.makeSettings(),
-    // MainNavigationNameRoute.bookDetails: (_) =>
-    //     _screenFactory.makeBookDetails(),
     MainNavigationNameRoute.bottomNavigationBar: (_) =>
         _screenFactory.makeBottomNavigationBar(),
     MainNavigationNameRoute.sideBar: (_) => _screenFactory.makeSideBar(),
@@ -39,6 +38,7 @@ class MainNavigation {
     MainNavigationNameRoute.profile: (_) => _screenFactory.makeProfile(),
     MainNavigationNameRoute.bookHandling: (_) =>
         _screenFactory.makeBookHandling(),
+    MainNavigationNameRoute.history: (_) => _screenFactory.makeHistory(),
   };
 
   Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -107,5 +107,9 @@ class MainNavigation {
 
   void popFromOrderScreen(BuildContext context) {
     Navigator.of(context).pop();
+  }
+
+  void goToHistoryScreen(BuildContext context) {
+    Navigator.of(context).pushNamed(MainNavigationNameRoute.history);
   }
 }

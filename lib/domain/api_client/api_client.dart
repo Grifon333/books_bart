@@ -41,6 +41,8 @@ class ApiClient {
     _firebaseStorage = FirebaseStorage.instance;
   }
 
+  /// --------------------------AUTH--------------------------------------------
+
   Future<UserCredential?> signInWithEmailAndPassword(
     String email,
     String password,
@@ -115,16 +117,6 @@ class ApiClient {
     }
   }
 
-  Future<void> logout() async {
-    try {
-      await _firebaseAuth.signOut();
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   Future<void> sendEmailVerification(User? user) async {
     try {
       await user?.sendEmailVerification();
@@ -151,7 +143,7 @@ class ApiClient {
       //   email: _firebaseAuth.currentUser?.email ?? '',
       // );
       await _firebaseAuth.currentUser?.updatePassword(password);
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException catch (e) {
       throw Exception(e.message);
       // throw ApiClientFirebaseAuthException('Error with server. Try late.');
     } catch (e) {
@@ -196,6 +188,20 @@ class ApiClient {
     }
   }
 
+  Future<void> logout() async {
+    try {
+      await _firebaseAuth.signOut();
+    } on FirebaseAuthException {
+      throw ApiClientFirebaseAuthException('Error with server. Try late.');
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  /// --------------------------------------------------------------------------
+
+  /// -----------------------------BOOK-----------------------------------------
+
   Future<Map<String, Book>> getAllBooks() async {
     try {
       final collection = await _firebaseFirestore
@@ -228,7 +234,7 @@ class ApiClient {
           .doc(bookId)
           .get()
           .then((value) => value.data());
-      final variantsOfBook = await getVariantsOfBookById(bookId);
+      final variantsOfBook = await _getVariantsOfBookById(bookId);
       return [book, variantsOfBook];
     } on FirebaseException {
       throw ApiClientFirebaseAuthException('Error getting Book Info by ID.');
@@ -237,7 +243,7 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, VariantOfBook>> getVariantsOfBookById(
+  Future<Map<String, VariantOfBook>> _getVariantsOfBookById(
       String bookId) async {
     try {
       Map<String, VariantOfBook> variantsOfBook = {};
@@ -258,6 +264,15 @@ class ApiClient {
           'Error getting Variants of Book by ID.');
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<String> getBookPhotoURL(String title) async {
+    try {
+      final ref = _firebaseStorage.ref('images/$title.jpg');
+      return await ref.getDownloadURL();
+    } catch (e) {
+      return 'https://edit.org/images/cat/book-covers-big-2019101610.jpg';
     }
   }
 
@@ -318,7 +333,7 @@ class ApiClient {
           .doc(bookId)
           .update(bookUpdateMap);
       Map<String, VariantOfBook> oldVariants =
-          await getVariantsOfBookById(bookId);
+          await _getVariantsOfBookById(bookId);
       List<VariantOfBook> newVariants = [];
       for (var variantOfBook in variantsOfBook) {
         if (oldVariants.values.contains(variantOfBook)) {
@@ -328,7 +343,7 @@ class ApiClient {
         newVariants.add(variantOfBook);
       }
       for (String id in oldVariants.keys) {
-        deleteVariantOfBook(bookId, id);
+        _deleteVariantOfBook(bookId, id);
       }
       for (var variant in newVariants) {
         _addVariantOfBook(bookId, variant);
@@ -343,9 +358,9 @@ class ApiClient {
   Future<void> deleteBook(String bookId) async {
     try {
       List<String> variantsOfBookId =
-          (await getVariantsOfBookById(bookId)).keys.toList();
+          (await _getVariantsOfBookById(bookId)).keys.toList();
       for (String id in variantsOfBookId) {
-        deleteVariantOfBook(bookId, id);
+        _deleteVariantOfBook(bookId, id);
       }
       await _firebaseFirestore
           .collection('books')
@@ -362,7 +377,7 @@ class ApiClient {
     }
   }
 
-  Future<void> deleteVariantOfBook(
+  Future<void> _deleteVariantOfBook(
     String bookId,
     String variantOfBookId,
   ) async {
@@ -382,31 +397,56 @@ class ApiClient {
     }
   }
 
-  Future<Book?> getBook(String title) async {
+  /// --------------------------------------------------------------------------
+
+  /// -----------------------------ORDER----------------------------------------
+
+  Future<Map<String, Order>> getOrders(String uid) async {
     try {
-      final book = await _firebaseFirestore
-          .collection('books')
+      Map<String, Order> orders = {};
+      final querySnapshot = await _firebaseFirestore
+          .collection('order')
           .withConverter(
-            fromFirestore: Book.fromFirestore,
-            toFirestore: (Book book, options) => book.toFirestore(),
+            fromFirestore: Order.fromFirestore,
+            toFirestore: (Order order, options) => order.toFirestore(),
           )
-          .doc(title)
-          .get()
-          .then((value) => value.data());
-      return book;
-    } on FirebaseException catch (e) {
-      throw ApiClientFirestoreException(e.message ?? 'Error getting Book');
+          .where('uid', isEqualTo: uid)
+          .get();
+      for (var doc in querySnapshot.docs) {
+        orders.addAll({doc.id: doc.data()});
+      }
+      return orders;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting Orders.',
+      );
     } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-  Future<String> getPhotoURL(String title) async {
+  Future<Map<String, BookInOrder>> getBooksInOrder(String orderId) async {
     try {
-      final ref = _firebaseStorage.ref('images/$title.jpg');
-      return await ref.getDownloadURL();
+      Map<String, BookInOrder> result = {};
+      final querySnapshot = await _firebaseFirestore
+          .collection('book_in_order')
+          .withConverter(
+            fromFirestore: BookInOrder.fromFirestore,
+            toFirestore: (BookInOrder bookInOrder, options) =>
+                bookInOrder.toFirestore(),
+          )
+          .where('id_order', isEqualTo: orderId)
+          .get();
+      for (var doc in querySnapshot.docs) {
+        result.addAll({doc.id: doc.data()});
+      }
+      return result;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting Books in Order.',
+      );
     } catch (e) {
-      return 'https://edit.org/images/cat/book-covers-big-2019101610.jpg';
+      throw Exception(e.toString());
     }
   }
 
@@ -492,31 +532,6 @@ class ApiClient {
     }
   }
 
-  Future<Map<String, BookInOrder>> getBooksInOrder(String orderId) async {
-    try {
-      Map<String, BookInOrder> result = {};
-      final docRef = await _firebaseFirestore
-          .collection('book_in_order')
-          .withConverter(
-            fromFirestore: BookInOrder.fromFirestore,
-            toFirestore: (BookInOrder bookInOrder, options) =>
-                bookInOrder.toFirestore(),
-          )
-          .where('id_order', isEqualTo: orderId)
-          .get();
-      for (var doc in docRef.docs) {
-        result.addAll({doc.id: doc.data()});
-      }
-      return result;
-    } on FirebaseException {
-      throw ApiClientFirebaseAuthException(
-        'Error getting Books in Order.',
-      );
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   Future<void> updateBookInOrder(
     String bookInOrderId,
     Map<String, dynamic> changes,
@@ -544,6 +559,7 @@ class ApiClient {
     String orderId,
     DateTime dateRegistration,
     String paymentMethod,
+    double price,
   ) async {
     try {
       await _firebaseFirestore
@@ -559,6 +575,7 @@ class ApiClient {
           'date_registration':
               cloud_firestore.Timestamp.fromDate(dateRegistration),
           'status': 'Submitted',
+          'price': price,
         },
       );
     } on FirebaseException {
@@ -584,6 +601,58 @@ class ApiClient {
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
         'Error deleting Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  /// --------------------------------------------------------------------------
+
+  /// -------------------------FAVORITE_BOOK------------------------------------
+
+  Future<Map<String, FavoriteBook>> getFavoriteBooks(String uid) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .where('uid', isEqualTo: uid)
+          .get();
+      Map<String, FavoriteBook> favoriteBooks = {};
+      for (var doc in querySnapshot.docs) {
+        favoriteBooks.addAll({doc.id: doc.data()});
+      }
+      return favoriteBooks;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting FavoriteBook.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  // TODO: replace this method to deleteFavoriteBook(String uid, String bookId)
+  Future<String> getFavoriteBookId(FavoriteBook favoriteBook) async {
+    try {
+      final querySnapshot = await _firebaseFirestore
+          .collection('favorite_book')
+          .withConverter(
+            fromFirestore: FavoriteBook.fromFirestore,
+            toFirestore: (FavoriteBook favoriteBook, options) =>
+                favoriteBook.toFirestore(),
+          )
+          .where('id_book', isEqualTo: favoriteBook.idBook)
+          .where('uid', isEqualTo: favoriteBook.uid)
+          .get();
+      return querySnapshot.docs[0].id;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting FavoriteBook by ID.',
       );
     } catch (e) {
       throw Exception(e.toString());
@@ -651,47 +720,24 @@ class ApiClient {
     }
   }
 
-  Future<String> getFavoriteBookId(FavoriteBook favoriteBook) async {
-    try {
-      final querySnapshot = await _firebaseFirestore
-          .collection('favorite_book')
-          .withConverter(
-            fromFirestore: FavoriteBook.fromFirestore,
-            toFirestore: (FavoriteBook favoriteBook, options) =>
-                favoriteBook.toFirestore(),
-          )
-          .where('id_book', isEqualTo: favoriteBook.idBook)
-          .where('uid', isEqualTo: favoriteBook.uid)
-          .get();
-      return querySnapshot.docs[0].id;
-    } on FirebaseException {
-      throw ApiClientFirebaseAuthException(
-        'Error getting FavoriteBook by ID.',
-      );
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
+  /// --------------------------------------------------------------------------
 
-  Future<Map<String, FavoriteBook>> getFavoriteBooks(String uid) async {
+  /// -------------------------------REVIEW-------------------------------------
+
+  Future<List<Review>> getReviews(String bookId) async {
     try {
       final querySnapshot = await _firebaseFirestore
-          .collection('favorite_book')
+          .collection('review')
           .withConverter(
-            fromFirestore: FavoriteBook.fromFirestore,
-            toFirestore: (FavoriteBook favoriteBook, options) =>
-                favoriteBook.toFirestore(),
+            fromFirestore: Review.fromFirestore,
+            toFirestore: (Review review, options) => review.toFirestore(),
           )
-          .where('uid', isEqualTo: uid)
+          .where('id_book', isEqualTo: bookId)
           .get();
-      Map<String, FavoriteBook> favoriteBooks = {};
-      for (var doc in querySnapshot.docs) {
-        favoriteBooks.addAll({doc.id: doc.data()});
-      }
-      return favoriteBooks;
+      return querySnapshot.docs.map((e) => e.data()).toList();
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
-        'Error getting FavoriteBook.',
+        'Error getting Reviews.',
       );
     } catch (e) {
       throw Exception(e.toString());
@@ -749,23 +795,5 @@ class ApiClient {
     }
   }
 
-  Future<List<Review>> getReviews(String bookId) async {
-    try {
-      final querySnapshot = await _firebaseFirestore
-          .collection('review')
-          .withConverter(
-            fromFirestore: Review.fromFirestore,
-            toFirestore: (Review review, options) => review.toFirestore(),
-          )
-          .where('id_book', isEqualTo: bookId)
-          .get();
-      return querySnapshot.docs.map((e) => e.data()).toList();
-    } on FirebaseException {
-      throw ApiClientFirebaseAuthException(
-        'Error getting Reviews.',
-      );
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
+  /// --------------------------------------------------------------------------
 }

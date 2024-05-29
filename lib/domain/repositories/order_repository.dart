@@ -54,10 +54,19 @@ class OrderRepository {
     }
   }
 
-  Future<Map<String, BookInOrder>> getBooksInOrder() async {
+  Future<Map<String, BookInOrder>> getBooksInCreatingOrder() async {
     try {
       String? orderId = await _orderDataProvider.getOrderId();
       if (orderId == null) return {};
+      return await _apiClient.getBooksInOrder(orderId);
+    } catch (e) {
+      debugPrint(e.toString());
+      return {};
+    }
+  }
+
+  Future<Map<String, BookInOrder>> getBooksInOrder(String orderId) async {
+    try {
       return await _apiClient.getBooksInOrder(orderId);
     } catch (e) {
       debugPrint(e.toString());
@@ -73,7 +82,7 @@ class OrderRepository {
     }
   }
 
-  Future<void> submitOrder() async {
+  Future<void> submitOrder(double price) async {
     try {
       String? orderId = await _orderDataProvider.getOrderId();
       if (orderId == null) return;
@@ -81,6 +90,7 @@ class OrderRepository {
         orderId,
         DateTime.now(),
         'Card',
+        price,
       );
       await _orderDataProvider.deleteOrderId();
     } catch (e) {
@@ -101,6 +111,17 @@ class OrderRepository {
       await _orderDataProvider.deleteOrderId();
     } catch (e) {
       debugPrint(e.toString());
+    }
+  }
+
+  Future<Map<String, Order>> getOrders() async {
+    try {
+      String? uid = (await _userDataProvider.getUserData())?.uid;
+      if (uid == null) return {};
+      return await _apiClient.getOrders(uid);
+    } catch (e) {
+      debugPrint(e.toString());
+      return {};
     }
   }
 }

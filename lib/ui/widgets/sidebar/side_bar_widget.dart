@@ -18,8 +18,10 @@ class SideBarWidget extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _TitleCardWidget(),
+                  _HistoryButton(),
                   Divider(height: 20),
                   _LogoutButtonWidget(),
                 ],
@@ -49,7 +51,41 @@ class _TitleCardWidget extends StatelessWidget {
       ),
       title: Text(
         model.state.nickname,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 18,
+        ),
+      ),
+    );
+  }
+}
+
+class _HistoryButton extends StatelessWidget {
+  const _HistoryButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.read<SideBarViewModel>();
+    return SizedBox(
+      width: double.infinity,
+      child: TextButton(
+        onPressed: model.onPressedHistory,
+        child: const Row(
+          children: [
+            Icon(
+              Icons.history,
+              color: Colors.white,
+            ),
+            SizedBox(width: 20),
+            Text(
+              'History',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -67,7 +103,9 @@ class _LogoutButtonWidget extends StatelessWidget {
         onPressed: model.onPressedLogout,
         child: const Text(
           'Log out',
-          style: TextStyle(),
+          style: TextStyle(
+            fontSize: 16,
+          ),
         ),
       ),
     );

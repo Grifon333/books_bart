@@ -26,7 +26,7 @@ class SideBarViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  onShowProfile() {
+  void onShowProfile() {
     _mainNavigation.goToProfileScreen(context);
   }
 
@@ -35,5 +35,13 @@ class SideBarViewModel extends ChangeNotifier {
     await _orderRepository.deleteOrderId();
     if (!context.mounted) return;
     _mainNavigation.goToLoginScreen(context);
+  }
+
+  Future<void> onPressedHistory() async {
+    _onGoHistoryScreen();
+  }
+
+  void _onGoHistoryScreen() {
+    _mainNavigation.goToHistoryScreen(context);
   }
 }

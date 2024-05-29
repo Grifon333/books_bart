@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// STATUS:
+/// 'Creating'
+/// 'Submitted'
+
 class Order {
   String uid;
   DateTime? dateRegistration;
@@ -22,7 +26,7 @@ class Order {
     final data = snapshot.data();
     return Order(
       uid: data?['uid'],
-      dateRegistration: data?['date_registration'],
+      dateRegistration: (data?['date_registration'] as Timestamp?)?.toDate(),
       price: data?['price'],
       paymentMethod: data?['payment_method'],
       status: data?['status'],

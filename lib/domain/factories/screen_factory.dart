@@ -10,6 +10,8 @@ import 'package:books_bart/ui/widgets/cart/cart_view_model.dart';
 import 'package:books_bart/ui/widgets/cart/cart_widget.dart';
 import 'package:books_bart/ui/widgets/favorite_books/favorite_books_view_model.dart';
 import 'package:books_bart/ui/widgets/favorite_books/favorite_books_widget.dart';
+import 'package:books_bart/ui/widgets/history/history_view_model.dart';
+import 'package:books_bart/ui/widgets/history/history_widget.dart';
 import 'package:books_bart/ui/widgets/home/home_view_model.dart';
 import 'package:books_bart/ui/widgets/home/home_widget.dart';
 import 'package:books_bart/ui/widgets/loader/loader_view_model.dart';
@@ -137,6 +139,13 @@ class ScreenFactory {
         bookId: bookId,
       ),
       child: FormBookInfoWidget.edit(),
+    );
+  }
+
+  Widget makeHistory() {
+    return ChangeNotifierProvider(
+      create: (context) => HistoryViewModel(context),
+      child: const HistoryWidget(),
     );
   }
 }
