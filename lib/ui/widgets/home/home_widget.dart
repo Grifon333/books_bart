@@ -105,7 +105,7 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String name = 'John';
+    String name = context.select((HomeViewModel vm) => vm.state.nickname);
     return Text(
       'Hello $name!\nWhich book do you want to buy?',
       style: const TextStyle(

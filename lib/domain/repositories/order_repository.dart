@@ -33,7 +33,7 @@ class OrderRepository {
     try {
       String? orderId = await _orderDataProvider.getOrderId();
       if (orderId == null) {
-        createOrder();
+        await createOrder();
         orderId = await _orderDataProvider.getOrderId();
         if (orderId == null) return;
       }
@@ -82,7 +82,7 @@ class OrderRepository {
         DateTime.now(),
         'Card',
       );
-      _orderDataProvider.deleteOrderId();
+      await _orderDataProvider.deleteOrderId();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -91,6 +91,14 @@ class OrderRepository {
   Future<void> deleteBookInOrder(String bookInOrderId) async {
     try {
       await _apiClient.deleteBookInOrder(bookInOrderId);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> deleteOrderId() async {
+    try {
+      await _orderDataProvider.deleteOrderId();
     } catch (e) {
       debugPrint(e.toString());
     }

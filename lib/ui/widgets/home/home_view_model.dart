@@ -1,5 +1,6 @@
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
+import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,7 @@ class HomeState {
   String searchTitle = '';
   bool isFiltered = false;
   bool canReturn = false;
+  String nickname = '';
 }
 
 class HomeViewModel extends ChangeNotifier {
@@ -16,6 +18,7 @@ class HomeViewModel extends ChangeNotifier {
   final HomeState _state = HomeState();
   final BookRepository _bookRepository = BookRepository();
   final MainNavigation _mainNavigation = MainNavigation();
+  final UserRepository _userRepository = UserRepository();
 
   HomeViewModel(this.context) {
     _init();
@@ -24,6 +27,12 @@ class HomeViewModel extends ChangeNotifier {
   HomeState get state => _state;
 
   Future<void> _init() async {
+    await _getBooks();
+    await _getUserNickname();
+    notifyListeners();
+  }
+
+  Future<void> _getBooks() async {
     final books = await _bookRepository.getAllBooksWithId();
     Map<String, List<BookInfo>> booksByCategory = {};
     for (var bookEntry in books.entries) {
@@ -50,7 +59,11 @@ class HomeViewModel extends ChangeNotifier {
     for (var booksInCategory in booksByCategory.values) {
       _state.filteredBooks.addAll(booksInCategory);
     }
-    notifyListeners();
+  }
+
+  Future<void> _getUserNickname() async {
+    final userData = await _userRepository.getCurrentUserData();
+    _state.nickname = userData.name ?? 'Friend';
   }
 
   Future<void> onRefresh() async {
