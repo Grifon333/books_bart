@@ -401,7 +401,7 @@ class ApiClient {
 
   /// -----------------------------ORDER----------------------------------------
 
-  Future<Map<String, Order>> getOrders(String uid) async {
+  Future<Map<String, Order>> getOrdersOfCurrentUser(String uid) async {
     try {
       Map<String, Order> orders = {};
       final querySnapshot = await _firebaseFirestore
@@ -418,7 +418,30 @@ class ApiClient {
       return orders;
     } on FirebaseException {
       throw ApiClientFirebaseAuthException(
-        'Error getting Orders.',
+        'Error getting Orders of current user.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<Map<String, Order>> getAllOrders() async {
+    try {
+      Map<String, Order> orders = {};
+      final querySnapshot = await _firebaseFirestore
+          .collection('order')
+          .withConverter(
+            fromFirestore: Order.fromFirestore,
+            toFirestore: (Order order, options) => order.toFirestore(),
+          )
+          .get();
+      for (var doc in querySnapshot.docs) {
+        orders.addAll({doc.id: doc.data()});
+      }
+      return orders;
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error getting all Orders.',
       );
     } catch (e) {
       throw Exception(e.toString());
@@ -574,7 +597,7 @@ class ApiClient {
           'payment_method': paymentMethod,
           'date_registration':
               cloud_firestore.Timestamp.fromDate(dateRegistration),
-          'status': 'Submitted',
+          'status': OrderStatus.newOrder.toString(),
           'price': price,
         },
       );

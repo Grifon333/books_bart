@@ -4,6 +4,7 @@ import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
+import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +18,7 @@ class HistoryViewModel extends ChangeNotifier {
   final HistoryState _state = HistoryState();
   final OrderRepository _orderRepository = OrderRepository();
   final BookRepository _bookRepository = BookRepository();
+  final UserRepository _userRepository = UserRepository();
 
   HistoryState get state => _state;
 
@@ -34,13 +36,17 @@ class HistoryViewModel extends ChangeNotifier {
 
   Future<void> _getOrders() async {
     _state.orders.clear();
-    final Map<String, Order> orders = await _orderRepository.getOrders();
+    String role = await _userRepository.getRole();
+    final Map<String, Order> orders = role == 'manager'
+        ? await _orderRepository.getAllOrders()
+        : await _orderRepository.getOrdersOfCurrentUser();
     for (var orderEntry in orders.entries) {
       final Order order = orderEntry.value;
+      if (order.status == OrderStatus.creating) continue;
       List<BookInfo> booksInfo = await _getBookInfo(orderEntry.key);
       _state.orders.add(OrderInfo(
         id: orderEntry.key,
-        status: order.status,
+        status: order.status.toString(),
         dateRegistration: order.dateRegistration,
         books: booksInfo,
         paymentMethod: order.paymentMethod,
@@ -100,8 +106,8 @@ class OrderInfo {
   }) : _dateRegistration = dateRegistration;
 
   int compareTo(OrderInfo other) {
-    if (status == 'Creating') return -1;
-    if (other.status == 'Creating') return 1;
+    int compareStatus = status.compareTo(other.status);
+    if (compareStatus != 0) return compareStatus;
     int dateComparison = _dateRegistration!.compareTo(other._dateRegistration!);
     if (dateComparison == 1) {
       return -1;

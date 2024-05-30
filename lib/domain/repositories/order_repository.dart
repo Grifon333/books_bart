@@ -17,7 +17,7 @@ class OrderRepository {
       Order order = Order(
         uid: uid,
         price: 0,
-        status: 'Creating',
+        status: OrderStatus.creating,
       );
       String orderId = await _apiClient.addOrder(order);
       _orderDataProvider.setOrderId(orderId);
@@ -114,11 +114,20 @@ class OrderRepository {
     }
   }
 
-  Future<Map<String, Order>> getOrders() async {
+  Future<Map<String, Order>> getOrdersOfCurrentUser() async {
     try {
       String? uid = (await _userDataProvider.getUserData())?.uid;
       if (uid == null) return {};
-      return await _apiClient.getOrders(uid);
+      return await _apiClient.getOrdersOfCurrentUser(uid);
+    } catch (e) {
+      debugPrint(e.toString());
+      return {};
+    }
+  }
+
+  Future<Map<String, Order>> getAllOrders() async {
+    try {
+      return await _apiClient.getAllOrders();
     } catch (e) {
       debugPrint(e.toString());
       return {};

@@ -1,15 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// STATUS:
-/// 'Creating'
-/// 'Submitted'
+enum OrderStatus {
+  creating,
+  newOrder,
+  confirmed,
+  processing,
+  assembled,
+  shipped,
+  delivered,
+  completed;
+
+  @override
+  String toString() {
+    return name;
+  }
+
+  factory OrderStatus.fromString(String str) {
+    for (OrderStatus element in OrderStatus.values) {
+      if (element.toString() == str) return element;
+    }
+    return OrderStatus.newOrder;
+  }
+
+  int compareTo(OrderStatus other) {
+    return index - other.index;
+  }
+}
 
 class Order {
   String uid;
   DateTime? dateRegistration;
   double price;
   String? paymentMethod;
-  String status;
+  OrderStatus status;
 
   Order({
     required this.uid,
@@ -29,7 +52,7 @@ class Order {
       dateRegistration: (data?['date_registration'] as Timestamp?)?.toDate(),
       price: data?['price'],
       paymentMethod: data?['payment_method'],
-      status: data?['status'],
+      status: OrderStatus.fromString(data?['status']),
     );
   }
 
@@ -39,8 +62,14 @@ class Order {
       'date_registration': dateRegistration,
       'price': price,
       'payment_method': paymentMethod,
-      'status': status,
+      'status': status.toString(),
     };
+  }
+
+  int compareTo(Order other) {
+    int compareStatus = status.compareTo(other.status);
+    if (compareStatus != 0) return compareStatus;
+    return dateRegistration!.compareTo(other.dateRegistration!);
   }
 
   @override

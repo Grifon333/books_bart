@@ -54,6 +54,7 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
         _screenFactory.makeCart(),
         _screenFactory.makeSettings(),
       ]);
+      notifyListeners();
     }
   }
 
