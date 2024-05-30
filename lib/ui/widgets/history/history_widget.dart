@@ -61,15 +61,17 @@ class _CartOrderInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final order = context.watch<HistoryViewModel>().state.orders[index];
     final List<BookInfo> books = order.books;
+    final Color color = order.statusColor;
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          border: Border.all(color: color, width: 2),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey,
+              color: color,
               blurRadius: 4,
             )
           ],
@@ -86,8 +88,26 @@ class _CartOrderInfoWidget extends StatelessWidget {
                     order.status,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 18,
                       color: order.statusColor,
+                        shadows: const [
+                          Shadow( // bottomLeft
+                              offset: Offset(-0.2, -0.2),
+                              color: Colors.black
+                          ),
+                          Shadow( // bottomRight
+                              offset: Offset(0.2, -0.2),
+                              color: Colors.black
+                          ),
+                          Shadow( // topRight
+                              offset: Offset(0.2, 0.2),
+                              color: Colors.black
+                          ),
+                          Shadow( // topLeft
+                              offset: Offset(-0.2, 0.2),
+                              color: Colors.black
+                          ),
+                        ],
                     ),
                   ),
                   order.dateRegistration != null
@@ -146,8 +166,7 @@ class _BookInfoWidget extends StatelessWidget {
           flex: 4,
           child: Text(
             '${bookInfo.title} x ${bookInfo.count}',
-            style: TextStyle(
-              // fontSize: size,
+            style: const TextStyle(
               color: Colors.black54,
               fontWeight: FontWeight.w600,
             ),
@@ -157,8 +176,7 @@ class _BookInfoWidget extends StatelessWidget {
           flex: 1,
           child: Text(
             bookInfo.priceStr,
-            style: TextStyle(
-              // fontSize: size,
+            style: const TextStyle(
               color: Colors.black54,
               fontWeight: FontWeight.w600,
             ),

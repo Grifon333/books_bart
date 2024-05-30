@@ -51,6 +51,7 @@ class HistoryViewModel extends ChangeNotifier {
         books: booksInfo,
         paymentMethod: order.paymentMethod,
         price: '${order.price}\$',
+        statusColor: order.status.getColor(),
       ));
     }
     _state.orders.sort((a, b) => a.compareTo(b));

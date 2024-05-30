@@ -1,21 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+List<Color> _colors = [
+  Colors.red,
+  Colors.blue,
+  Colors.yellow,
+  Colors.green,
+  Colors.teal,
+  Colors.grey,
+];
 
 enum OrderStatus {
   creating,
-  newOrder,
-  confirmed,
-  processing,
-  assembled,
-  shipped,
-  delivered,
-  completed;
+  newOrder, // Red
+  confirmed, // Blue
+  processing, // Yellow
+  assembled, // Green
+  delivered, // Teal
+  completed; // Grey
 
   @override
   String toString() {
+    if (index == 1) return 'new';
     return name;
   }
 
+  Color getColor() {
+    return _colors[index - 1];
+  }
+
   factory OrderStatus.fromString(String str) {
+    if (str == 'new') return OrderStatus.newOrder;
     for (OrderStatus element in OrderStatus.values) {
       if (element.toString() == str) return element;
     }
