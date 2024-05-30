@@ -21,15 +21,19 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
   @override
   void initState() {
     super.initState();
-    // TODO: Refactoring!
-    _model = context.read<BottomNavigationBarViewModel>()
-      ..addListener(() {
-        setState(() {});
-      });
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
     )..addListener(() {
+        setState(() {});
+      });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _model = context.read<BottomNavigationBarViewModel>()
+      ..addListener(() {
         setState(() {});
       });
     _model.initAnimations(_animationController);

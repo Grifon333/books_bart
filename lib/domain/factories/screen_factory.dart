@@ -84,6 +84,7 @@ class ScreenFactory {
 
   Widget makeBottomNavigationBar() {
     return ChangeNotifierProvider(
+      lazy: false,
       create: (context) => BottomNavigationBarViewModel(context),
       child: const BottomNavigationBarWidget(),
     );

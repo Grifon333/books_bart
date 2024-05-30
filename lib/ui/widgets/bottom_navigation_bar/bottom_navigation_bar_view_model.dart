@@ -25,6 +25,7 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
   }
 
   Future<void> _init() async {
+    if (_state.icons.isNotEmpty) return;
     String role = await _userRepository.getRole();
     if (role == 'customer') {
       _state.icons.addAll([
@@ -54,8 +55,8 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
         _screenFactory.makeCart(),
         _screenFactory.makeSettings(),
       ]);
-      notifyListeners();
     }
+    notifyListeners();
   }
 
   void initAnimations(AnimationController animationController) {
