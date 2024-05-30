@@ -11,6 +11,10 @@ class AuthRepository {
     return await _userDataProvider.getUserData() != null;
   }
 
+  String getRole(String email) {
+    return email == '201173@nuos.edu.ua' ? 'manager' : 'customer';
+  }
+
   Future<void> login(String email, String password) async {
     try {
       final userCredential = await _apiClient.signInWithEmailAndPassword(
@@ -26,6 +30,7 @@ class AuthRepository {
           phoneNumber: userCredential.user!.phoneNumber,
           sighInMethod: userCredential.credential?.signInMethod ?? '',
           urlPhoto: userCredential.user!.photoURL,
+          role: getRole(email),
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -38,13 +43,15 @@ class AuthRepository {
     try {
       final userCredential = await _apiClient.signInWithGoogle();
       if (userCredential != null && userCredential.user != null) {
+        String email = userCredential.user!.email ?? 'no-email';
         final userData = User(
           uid: userCredential.user!.uid,
           name: userCredential.user!.displayName,
-          email: userCredential.user!.email ?? 'no-email',
+          email: email,
           phoneNumber: userCredential.user!.phoneNumber,
           sighInMethod: 'google.com',
           urlPhoto: userCredential.user!.photoURL,
+          role: getRole(email),
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -70,6 +77,7 @@ class AuthRepository {
           name: nickname,
           email: email,
           sighInMethod: 'password',
+          role: getRole(email),
         );
         await _userDataProvider.setUserData(userData);
       }
@@ -78,5 +86,8 @@ class AuthRepository {
     }
   }
 
-  Future<void> logout() async {}
+  Future<void> logout() async {
+    await _apiClient.logout();
+    _userDataProvider.deleteUserData();
+  }
 }

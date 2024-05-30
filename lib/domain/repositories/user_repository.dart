@@ -37,8 +37,8 @@ class UserRepository {
     _userDataProvider.setUserData(user);
   }
 
-  Future<void> logout() async {
-    await _apiClient.logout();
-    _userDataProvider.deleteUserData();
+  Future<String> getRole() async {
+    User userData = await _userDataProvider.getUserData() ?? User.anonymous();
+    return userData.role;
   }
 }

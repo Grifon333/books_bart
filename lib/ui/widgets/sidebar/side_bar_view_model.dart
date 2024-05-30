@@ -1,3 +1,4 @@
+import 'package:books_bart/domain/repositories/auth_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
@@ -13,6 +14,7 @@ class SideBarViewModel extends ChangeNotifier {
   final MainNavigation _mainNavigation = MainNavigation();
   final UserRepository _userRepository = UserRepository();
   final OrderRepository _orderRepository = OrderRepository();
+  final AuthRepository _authRepository = AuthRepository();
 
   SideBarState get state => _state;
 
@@ -31,7 +33,7 @@ class SideBarViewModel extends ChangeNotifier {
   }
 
   Future<void> onPressedLogout() async {
-    await _userRepository.logout();
+    await _authRepository.logout();
     await _orderRepository.deleteOrderId();
     if (!context.mounted) return;
     _mainNavigation.goToLoginScreen(context);

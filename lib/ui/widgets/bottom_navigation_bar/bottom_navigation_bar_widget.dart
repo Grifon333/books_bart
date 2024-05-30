@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:books_bart/domain/factories/screen_factory.dart';
+import 'package:books_bart/ui/widgets/bottom_navigation_bar/bottom_navigation_bar_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BottomNavigationBarWidget extends StatefulWidget {
   const BottomNavigationBarWidget({super.key});
@@ -12,34 +14,25 @@ class BottomNavigationBarWidget extends StatefulWidget {
 
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
     with SingleTickerProviderStateMixin {
-  int selectIndex = 0;
-  bool _isOpenSideBar = false;
+  late final BottomNavigationBarViewModel _model;
   final _screenFactory = ScreenFactory();
   late AnimationController _animationController;
-  late Animation<double> _animation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
+    super.initState();
+    // TODO: Refactoring!
+    _model = context.read<BottomNavigationBarViewModel>()
+      ..addListener(() {
+        setState(() {});
+      });
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
     )..addListener(() {
         setState(() {});
       });
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
-    _scaleAnimation = Tween<double>(begin: 1, end: 0.8).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
-    super.initState();
+    _model.initAnimations(_animationController);
   }
 
   @override
@@ -48,13 +41,11 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
     super.dispose();
   }
 
-  void updateSelectIndex(int value) {
-    selectIndex = value;
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isOpenSideBar = _model.state.isOpenSideBar;
+    final rotateAnimation = _model.state.rotateAnimation;
+    final scaleAnimation = _model.state.scaleAnimation;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       extendBody: true,
@@ -65,7 +56,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
             duration: const Duration(milliseconds: 200),
             curve: Curves.fastOutSlowIn,
             width: 288,
-            left: _isOpenSideBar ? 0 : -288,
+            left: isOpenSideBar ? 0 : -288,
             height: MediaQuery.of(context).size.height,
             child: _screenFactory.makeSideBar(),
           ),
@@ -73,22 +64,17 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
             alignment: Alignment.center,
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.001)
-              ..rotateY(_animation.value - 30 * _animation.value * pi / 180),
+              ..rotateY(rotateAnimation.value -
+                  30 * rotateAnimation.value * pi / 180),
             child: Transform.translate(
-              offset: Offset(_animation.value * 265, 0),
+              offset: Offset(rotateAnimation.value * 265, 0),
               child: Transform.scale(
-                scale: _scaleAnimation.value,
+                scale: scaleAnimation.value,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(24)),
                   child: IndexedStack(
-                    index: selectIndex,
-                    children: [
-                      _screenFactory.makeHome(),
-                      _screenFactory.makeBookHandling(),
-                      _screenFactory.makeFavoriteBooks(),
-                      _screenFactory.makeCart(),
-                      _screenFactory.makeSettings(),
-                    ],
+                    index: _model.state.selectPageIndex,
+                    children: _model.state.screens,
                   ),
                 ),
               ),
@@ -96,20 +82,11 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
           ),
           AnimatedPositioned(
             duration: const Duration(milliseconds: 200),
-            left: _isOpenSideBar ? 220 : 8,
+            left: isOpenSideBar ? 220 : 8,
             top: 56,
             curve: Curves.fastOutSlowIn,
             child: IconButton(
-              onPressed: () {
-                if (_isOpenSideBar) {
-                  _animationController.reverse();
-                } else {
-                  _animationController.forward();
-                }
-                setState(() {
-                  _isOpenSideBar = !_isOpenSideBar;
-                });
-              },
+              onPressed: () => _model.onPressedSideBar(_animationController),
               style: const ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(Colors.white),
               ),
@@ -122,44 +99,25 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
         ],
       ),
       bottomNavigationBar: Transform.translate(
-        offset: Offset(0, 100 * _animation.value),
+        offset: Offset(0, 100 * rotateAnimation.value),
         child: const _BottomNavigationBar(),
       ),
     );
   }
 }
 
-class _BottomNavigationBar extends StatefulWidget {
+class _BottomNavigationBar extends StatelessWidget {
   const _BottomNavigationBar();
 
   @override
-  State<_BottomNavigationBar> createState() => _BottomNavigationBarState();
-}
-
-class _BottomNavigationBarState extends State<_BottomNavigationBar> {
-  final icons = [
-    Icons.book,
-    Icons.add,
-    Icons.bookmark,
-    Icons.shopping_cart,
-    Icons.settings,
-  ];
-  _BottomNavigationBarWidgetState? model;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    model = context.findAncestorStateOfType<_BottomNavigationBarWidgetState>();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    int selectIndex = model?.selectIndex ?? 0;
+    final model = context.watch<BottomNavigationBarViewModel>();
+    int selectIndex = model.state.selectPageIndex;
     return SafeArea(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 24),
         decoration: BoxDecoration(
-          color: selectIndex == 0 ? const Color(0xFFF5EEE5) : Colors.white,
+          color: model.state.bottomNavigationBarColor,
           borderRadius: BorderRadius.circular(30),
           boxShadow: const [
             BoxShadow(
@@ -175,16 +133,11 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ...List.generate(
-                icons.length,
+                model.state.icons.length,
                 (index) {
                   final isSelect = selectIndex == index;
                   return GestureDetector(
-                    onTap: () {
-                      if (index == selectIndex) return;
-                      selectIndex = index;
-                      model?.updateSelectIndex(index);
-                      setState(() {});
-                    },
+                    onTap: () => model.updatePageIndex(index),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -192,7 +145,7 @@ class _BottomNavigationBarState extends State<_BottomNavigationBar> {
                           isSelect: isSelect,
                         ),
                         Icon(
-                          icons[index],
+                          model.state.icons[index],
                           size: 32,
                         ),
                       ],
