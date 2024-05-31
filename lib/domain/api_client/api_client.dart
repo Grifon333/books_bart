@@ -578,6 +578,28 @@ class ApiClient {
     }
   }
 
+  Future<void> updateOrder(
+    String orderId,
+    Map<String, dynamic> changes,
+  ) async {
+    try {
+      await _firebaseFirestore
+          .collection('order')
+          .withConverter(
+            fromFirestore: Order.fromFirestore,
+            toFirestore: (Order order, options) => order.toFirestore(),
+          )
+          .doc(orderId)
+          .update(changes);
+    } on FirebaseException {
+      throw ApiClientFirebaseAuthException(
+        'Error updating Order.',
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
   Future<void> submitOrder(
     String orderId,
     DateTime dateRegistration,

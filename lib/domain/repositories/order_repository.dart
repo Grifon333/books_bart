@@ -98,6 +98,14 @@ class OrderRepository {
     }
   }
 
+  Future<void> updateOrderStatus(String orderId, String status) async {
+    try {
+      await _apiClient.updateOrder(orderId, {'status': status});
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   Future<void> deleteBookInOrder(String bookInOrderId) async {
     try {
       await _apiClient.deleteBookInOrder(bookInOrderId);

@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 class HistoryState {
   List<OrderInfo> orders = [];
   bool isLoading = false;
+  List<String> orderStatuses = [];
 }
 
 class HistoryViewModel extends ChangeNotifier {
@@ -19,8 +20,11 @@ class HistoryViewModel extends ChangeNotifier {
   final OrderRepository _orderRepository = OrderRepository();
   final BookRepository _bookRepository = BookRepository();
   final UserRepository _userRepository = UserRepository();
+  String? _role;
 
   HistoryState get state => _state;
+
+  String get role => _role ?? '';
 
   HistoryViewModel(this.context) {
     _init();
@@ -30,14 +34,15 @@ class HistoryViewModel extends ChangeNotifier {
     _state.isLoading = true;
     notifyListeners();
     await _getOrders();
+    _state.orderStatuses = OrderStatus.values.map((e) => e.toString()).toList();
     _state.isLoading = false;
     notifyListeners();
   }
 
   Future<void> _getOrders() async {
     _state.orders.clear();
-    String role = await _userRepository.getRole();
-    final Map<String, Order> orders = role == 'manager'
+    _role ??= await _userRepository.getRole();
+    final Map<String, Order> orders = _role == 'manager'
         ? await _orderRepository.getAllOrders()
         : await _orderRepository.getOrdersOfCurrentUser();
     for (var orderEntry in orders.entries) {
@@ -78,6 +83,15 @@ class HistoryViewModel extends ChangeNotifier {
     return booksInfo;
   }
 
+  void onChangeOrderStatus(int index, String? status) {
+    if (status == null) return;
+    _state.orders[index].status = status;
+    _state.orders[index].statusColor =
+        OrderStatus.fromString(status).getColor();
+    _orderRepository.updateOrderStatus(_state.orders[index].id, status);
+    notifyListeners();
+  }
+
   Future<void> onRefresh() async {
     await _init();
   }
@@ -85,18 +99,18 @@ class HistoryViewModel extends ChangeNotifier {
 
 class OrderInfo {
   final String id;
-  final String status;
+  String status;
   final DateTime? _dateRegistration;
   final List<BookInfo> books;
   final String? paymentMethod;
   final String price;
-  final Color statusColor;
+  Color statusColor;
 
   String? get dateRegistration => _dateRegistration == null
       ? null
       : DateFormat(DateFormat.YEAR_MONTH_DAY).format(_dateRegistration);
 
-  const OrderInfo({
+  OrderInfo({
     required this.id,
     required this.status,
     DateTime? dateRegistration,
@@ -107,7 +121,8 @@ class OrderInfo {
   }) : _dateRegistration = dateRegistration;
 
   int compareTo(OrderInfo other) {
-    int compareStatus = status.compareTo(other.status);
+    int compareStatus = OrderStatus.fromString(status)
+        .compareTo(OrderStatus.fromString(other.status));
     if (compareStatus != 0) return compareStatus;
     int dateComparison = _dateRegistration!.compareTo(other._dateRegistration!);
     if (dateComparison == 1) {

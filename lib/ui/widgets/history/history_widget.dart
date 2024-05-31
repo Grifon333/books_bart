@@ -59,7 +59,8 @@ class _CartOrderInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final order = context.watch<HistoryViewModel>().state.orders[index];
+    final model = context.watch<HistoryViewModel>();
+    final order = model.state.orders[index];
     final List<BookInfo> books = order.books;
     final Color color = order.statusColor;
     return Padding(
@@ -81,39 +82,19 @@ class _CartOrderInfoWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    order.status,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: order.statusColor,
-                        shadows: const [
-                          Shadow( // bottomLeft
-                              offset: Offset(-0.2, -0.2),
-                              color: Colors.black
-                          ),
-                          Shadow( // bottomRight
-                              offset: Offset(0.2, -0.2),
-                              color: Colors.black
-                          ),
-                          Shadow( // topRight
-                              offset: Offset(0.2, 0.2),
-                              color: Colors.black
-                          ),
-                          Shadow( // topLeft
-                              offset: Offset(-0.2, 0.2),
-                              color: Colors.black
-                          ),
-                        ],
-                    ),
-                  ),
-                  order.dateRegistration != null
-                      ? Text(order.dateRegistration!)
-                      : const SizedBox.shrink(),
-                ],
+              SizedBox(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    model.role == 'manager'
+                        ? _DropDownListWidget(index)
+                        : _OrderStateTextWidget(index),
+                    order.dateRegistration != null
+                        ? Text(order.dateRegistration!)
+                        : const SizedBox.shrink(),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               ...List.generate(
@@ -147,6 +128,77 @@ class _CartOrderInfoWidget extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _DropDownListWidget extends StatelessWidget {
+  final int index;
+
+  const _DropDownListWidget(this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<HistoryViewModel>();
+    final orderStatuses = model.state.orderStatuses;
+    String dropdownValue = model.state.orders[index].status;
+    return DropdownButton<String>(
+      value: dropdownValue,
+      icon: const Icon(Icons.arrow_drop_down),
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+      underline: Container(
+        height: 1,
+        color: const Color(0xFF7E675E),
+      ),
+      onChanged: (String? value) => model.onChangeOrderStatus(index, value),
+      items: orderStatuses.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+}
+
+class _OrderStateTextWidget extends StatelessWidget {
+  final int index;
+
+  const _OrderStateTextWidget(this.index);
+
+  @override
+  Widget build(BuildContext context) {
+    final orderStatus =
+        context.watch<HistoryViewModel>().state.orders[index].status;
+    return Text(
+      orderStatus,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 18,
+        color: Colors.black,
+        // shadows: const [
+        //   Shadow(
+        //       // bottomLeft
+        //       offset: Offset(-0.2, -0.2),
+        //       color: Colors.black),
+        //   Shadow(
+        //       // bottomRight
+        //       offset: Offset(0.2, -0.2),
+        //       color: Colors.black),
+        //   Shadow(
+        //       // topRight
+        //       offset: Offset(0.2, 0.2),
+        //       color: Colors.black),
+        //   Shadow(
+        //       // topLeft
+        //       offset: Offset(-0.2, 0.2),
+        //       color: Colors.black),
+        // ],
       ),
     );
   }
