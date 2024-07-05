@@ -1,16 +1,3 @@
 # books_bart
 
-Books bart App
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The software helps to improve the quality of customer service and avoid difficulties in the work of managers. It also facilitates customer interaction with the store by reducing the number of steps between viewing a product and ordering it. The mobile application allows you to display up-to-date information on the characteristics of a particular product and its availability in the store.
