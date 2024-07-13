@@ -1,4 +1,5 @@
 import 'package:books_bart/domain/repositories/user_repository.dart';
+import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class ErrorsMassage {
@@ -33,6 +34,7 @@ class ProfileViewModel extends ChangeNotifier {
   final BuildContext context;
   final ProfileState _state = ProfileState();
   final UserRepository _userRepository = UserRepository();
+  final MainNavigation _mainNavigation = MainNavigation();
 
   ProfileViewModel(this.context) {
     _init();
@@ -54,7 +56,7 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   void onPopUp() {
-    Navigator.of(context).pop();
+    _mainNavigation.pop(context);
   }
 
   void onEdit() {

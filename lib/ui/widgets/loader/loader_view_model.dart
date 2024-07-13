@@ -7,26 +7,27 @@ class LoaderViewModel {
   final BuildContext context;
   final AuthRepository _authRepository = AuthRepository();
   final ApiClient _apiClient = ApiClient.instance;
+  final MainNavigation _mainNavigation = MainNavigation();
 
   LoaderViewModel(this.context) {
-    init();
+    _init();
   }
 
-  Future<void> init() async {
-    await initFirebase();
-    await _checkAuth();
+  Future<void> _init() async {
+    await _initFirebase();
+    final isAuth = await _checkAuth();
+    _goToFirstScreen(isAuth);
   }
 
-  Future<void> initFirebase() async {
+  Future<void> _initFirebase() async {
     await _apiClient.init();
   }
 
-  Future<void> _checkAuth() async {
-    final isAuth = await _authRepository.isAuth();
-    final route = isAuth
-        ? MainNavigationNameRoute.bottomNavigationBar
-        : MainNavigationNameRoute.login;
-    if (!context.mounted) return;
-    Navigator.of(context).pushReplacementNamed(route);
+  Future<bool> _checkAuth() async {
+    return await _authRepository.isAuth();
+  }
+
+  void _goToFirstScreen(bool isAuth) {
+    _mainNavigation.goToFirstScreen(context, isAuth);
   }
 }

@@ -112,4 +112,15 @@ class MainNavigation {
   void goToHistoryScreen(BuildContext context) {
     Navigator.of(context).pushNamed(MainNavigationNameRoute.history);
   }
+
+  void pop(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
+  void goToFirstScreen(BuildContext context, bool isAuth) {
+    final route = isAuth
+        ? MainNavigationNameRoute.bottomNavigationBar
+        : MainNavigationNameRoute.login;
+    Navigator.of(context).pushReplacementNamed(route);
+  }
 }
