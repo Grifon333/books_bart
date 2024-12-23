@@ -33,14 +33,19 @@ class ProfileState {
 class ProfileViewModel extends ChangeNotifier {
   final BuildContext context;
   final ProfileState _state = ProfileState();
-  final UserRepository _userRepository = UserRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
-
-  ProfileViewModel(this.context) {
-    _init();
-  }
+  final MainNavigation _mainNavigation;
+  final UserRepository _userRepository;
 
   ProfileState get state => _state;
+
+  ProfileViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required UserRepository userRepository,
+  })  : _mainNavigation = mainNavigation,
+        _userRepository = userRepository {
+    _init();
+  }
 
   Future<void> _init() async {
     await _updateState();

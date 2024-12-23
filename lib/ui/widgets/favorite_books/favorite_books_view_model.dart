@@ -11,13 +11,21 @@ class FavoriteBooksState {
 class FavoriteBooksViewModel extends ChangeNotifier {
   final BuildContext context;
   final FavoriteBooksState _state = FavoriteBooksState();
-  final BookRepository _bookRepository = BookRepository();
-  final UserRepository _userRepository = UserRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
+  final MainNavigation _mainNavigation;
+  final BookRepository _bookRepository;
+  final UserRepository _userRepository;
 
   FavoriteBooksState get state => _state;
 
-  FavoriteBooksViewModel(this.context) {
+  FavoriteBooksViewModel(
+    this.context, {
+    required,
+    required MainNavigation mainNavigation,
+    required BookRepository bookRepository,
+    required UserRepository userRepository,
+  })  : _mainNavigation = mainNavigation,
+        _bookRepository = bookRepository,
+        _userRepository = userRepository {
     _init();
   }
 

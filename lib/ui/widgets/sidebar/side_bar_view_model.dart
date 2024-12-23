@@ -11,14 +11,23 @@ class SideBarState {
 class SideBarViewModel extends ChangeNotifier {
   final BuildContext context;
   final SideBarState _state = SideBarState();
-  final MainNavigation _mainNavigation = MainNavigation();
-  final UserRepository _userRepository = UserRepository();
-  final OrderRepository _orderRepository = OrderRepository();
-  final AuthRepository _authRepository = AuthRepository();
+  final MainNavigation _mainNavigation;
+  final UserRepository _userRepository;
+  final OrderRepository _orderRepository;
+  final AuthRepository _authRepository;
 
   SideBarState get state => _state;
 
-  SideBarViewModel(this.context) {
+  SideBarViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required UserRepository userRepository,
+    required OrderRepository orderRepository,
+    required AuthRepository authRepository,
+  })  : _mainNavigation = mainNavigation,
+        _userRepository = userRepository,
+        _orderRepository = orderRepository,
+        _authRepository = authRepository {
     _init();
   }
 

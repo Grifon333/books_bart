@@ -10,12 +10,17 @@ class BookHandlingState {
 class BookHandlingViewModel extends ChangeNotifier {
   final BuildContext context;
   final BookHandlingState _state = BookHandlingState();
-  final BookRepository _bookRepository = BookRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
+  final MainNavigation _mainNavigation;
+  final BookRepository _bookRepository;
 
   BookHandlingState get state => _state;
 
-  BookHandlingViewModel(this.context) {
+  BookHandlingViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required BookRepository bookRepository,
+  })  : _mainNavigation = mainNavigation,
+        _bookRepository = bookRepository {
     _init();
   }
 

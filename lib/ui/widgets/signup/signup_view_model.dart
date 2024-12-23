@@ -24,12 +24,17 @@ class SignupState {
 class SignupViewModel extends ChangeNotifier {
   final BuildContext context;
   final SignupState _state = SignupState(nickname: '', email: '', password: '');
-  final MainNavigation _mainNavigation = MainNavigation();
-  final AuthRepository _authRepository = AuthRepository();
-
-  SignupViewModel(this.context);
+  final MainNavigation _mainNavigation;
+  final AuthRepository _authRepository;
 
   SignupState get state => _state;
+
+  SignupViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required AuthRepository authRepository,
+  })  : _mainNavigation = mainNavigation,
+        _authRepository = authRepository;
 
   void onChangedNickname(String value) {
     _state.nickname = value;

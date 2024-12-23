@@ -17,16 +17,23 @@ class HistoryState {
 class HistoryViewModel extends ChangeNotifier {
   final BuildContext context;
   final HistoryState _state = HistoryState();
-  final OrderRepository _orderRepository = OrderRepository();
-  final BookRepository _bookRepository = BookRepository();
-  final UserRepository _userRepository = UserRepository();
+  final OrderRepository _orderRepository;
+  final BookRepository _bookRepository;
+  final UserRepository _userRepository;
   String? _role;
 
   HistoryState get state => _state;
 
   String get role => _role ?? '';
 
-  HistoryViewModel(this.context) {
+  HistoryViewModel(
+    this.context, {
+    required OrderRepository orderRepository,
+    required BookRepository bookRepository,
+    required UserRepository userRepository,
+  })  : _orderRepository = orderRepository,
+        _bookRepository = bookRepository,
+        _userRepository = userRepository {
     _init();
   }
 

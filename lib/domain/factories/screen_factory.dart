@@ -1,3 +1,9 @@
+import 'package:books_bart/domain/api_client/api_client.dart';
+import 'package:books_bart/domain/repositories/auth_repository.dart';
+import 'package:books_bart/domain/repositories/book_repository.dart';
+import 'package:books_bart/domain/repositories/order_repository.dart';
+import 'package:books_bart/domain/repositories/user_repository.dart';
+import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:books_bart/ui/widgets/book_details/book_details_view_model.dart';
 import 'package:books_bart/ui/widgets/book_details/book_details_widget.dart';
 import 'package:books_bart/ui/widgets/book_handling/form_book_info_view_model.dart';
@@ -32,9 +38,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ScreenFactory {
+  final MainNavigation _mainNavigation = MainNavigation();
+  final ApiClient _apiClient = ApiClient.instance;
+  final AuthRepository _authRepository = AuthRepository();
+  final BookRepository _bookRepository = BookRepository();
+  final UserRepository _userRepository = UserRepository();
+  final OrderRepository _orderRepository = OrderRepository();
+
   Widget makeLoader() {
     return Provider(
-      create: (context) => LoaderViewModel(context),
+      create: (context) => LoaderViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        apiClient: _apiClient,
+        authRepository: _authRepository,
+      ),
       lazy: false,
       child: const LoaderWidget(),
     );
@@ -42,28 +60,46 @@ class ScreenFactory {
 
   Widget makeHome() {
     return ChangeNotifierProvider(
-      create: (context) => HomeViewModel(context),
+      create: (context) => HomeViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        bookRepository: _bookRepository,
+        userRepository: _userRepository,
+      ),
       child: const HomeWidget(),
     );
   }
 
   Widget makeSignup() {
     return ChangeNotifierProvider(
-      create: (context) => SignupViewModel(context),
+      create: (context) => SignupViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        authRepository: _authRepository,
+      ),
       child: const SignUpWidget(),
     );
   }
 
   Widget makeLogin() {
     return ChangeNotifierProvider(
-      create: (context) => LoginViewModel(context),
+      create: (context) => LoginViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        authRepository: _authRepository,
+      ),
       child: const LoginWidget(),
     );
   }
 
   Widget makeFavoriteBooks() {
     return ChangeNotifierProvider(
-      create: (context) => FavoriteBooksViewModel(context),
+      create: (context) => FavoriteBooksViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        bookRepository: _bookRepository,
+        userRepository: _userRepository,
+      ),
       child: const FavoriteBooksWidget(),
     );
   }
@@ -77,7 +113,14 @@ class ScreenFactory {
 
   Widget makeBookDetails(String bookId) {
     return ChangeNotifierProvider(
-      create: (context) => BookDetailsViewModel(context, bookId),
+      create: (context) => BookDetailsViewModel(
+        context,
+        bookId,
+        mainNavigation: _mainNavigation,
+        bookRepository: _bookRepository,
+        orderRepository: _orderRepository,
+        userRepository: _userRepository,
+      ),
       child: const BookDetailsWidget(),
     );
   }
@@ -85,49 +128,80 @@ class ScreenFactory {
   Widget makeBottomNavigationBar() {
     return ChangeNotifierProvider(
       lazy: false,
-      create: (context) => BottomNavigationBarViewModel(context),
+      create: (context) => BottomNavigationBarViewModel(
+        context,
+        userRepository: _userRepository,
+      ),
       child: const BottomNavigationBarWidget(),
     );
   }
 
   Widget makeSideBar() {
     return ChangeNotifierProvider(
-      create: (context) => SideBarViewModel(context),
+      create: (context) => SideBarViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        userRepository: _userRepository,
+        orderRepository: _orderRepository,
+        authRepository: _authRepository,
+      ),
       child: const SideBarWidget(),
     );
   }
 
   Widget makeCart() {
     return ChangeNotifierProvider(
-      create: (context) => CartViewModel(context),
+      create: (context) => CartViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        orderRepository: _orderRepository,
+        bookRepository: _bookRepository,
+      ),
       child: const CartWidget(),
     );
   }
 
   Widget makeOrder() {
     return ChangeNotifierProvider(
-      create: (context) => OrderViewModel(context),
+      create: (context) => OrderViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        orderRepository: _orderRepository,
+        bookRepository: _bookRepository,
+      ),
       child: const OrderWidget(),
     );
   }
 
   Widget makeProfile() {
     return ChangeNotifierProvider(
-      create: (context) => ProfileViewModel(context),
+      create: (context) => ProfileViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        userRepository: _userRepository,
+      ),
       child: const ProfileWidget(),
     );
   }
 
   Widget makeBookHandling() {
     return ChangeNotifierProvider(
-      create: (context) => BookHandlingViewModel(context),
+      create: (context) => BookHandlingViewModel(
+        context,
+        mainNavigation: _mainNavigation,
+        bookRepository: _bookRepository,
+      ),
       child: const BookHandlingWidget(),
     );
   }
 
   Widget makeAddFormBookInfo() {
     return ChangeNotifierProvider(
-      create: (context) => FormBookInfoViewModel(context, FormType.add),
+      create: (context) => FormBookInfoViewModel(
+        context,
+        FormType.add,
+        bookRepository: _bookRepository,
+      ),
       child: FormBookInfoWidget.add(),
     );
   }
@@ -138,6 +212,7 @@ class ScreenFactory {
         context,
         FormType.edit,
         bookId: bookId,
+        bookRepository: _bookRepository,
       ),
       child: FormBookInfoWidget.edit(),
     );
@@ -145,7 +220,12 @@ class ScreenFactory {
 
   Widget makeHistory() {
     return ChangeNotifierProvider(
-      create: (context) => HistoryViewModel(context),
+      create: (context) => HistoryViewModel(
+        context,
+        orderRepository: _orderRepository,
+        bookRepository: _bookRepository,
+        userRepository: _userRepository,
+      ),
       child: const HistoryWidget(),
     );
   }

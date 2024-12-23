@@ -49,9 +49,9 @@ class FormBookInfoState {
 class FormBookInfoViewModel extends ChangeNotifier {
   final BuildContext context;
   final String? bookId;
-  final FormBookInfoState _state = FormBookInfoState();
   final FormType formType;
-  final BookRepository _bookRepository = BookRepository();
+  final FormBookInfoState _state = FormBookInfoState();
+  final BookRepository _bookRepository;
 
   FormBookInfoState get state => _state;
 
@@ -59,7 +59,8 @@ class FormBookInfoViewModel extends ChangeNotifier {
     this.context,
     this.formType, {
     this.bookId,
-  }) {
+    required BookRepository bookRepository,
+  }) : _bookRepository = bookRepository {
     _init();
   }
 

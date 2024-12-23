@@ -16,11 +16,14 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
   final BuildContext context;
   final BottomNavigationState _state = BottomNavigationState();
   final ScreenFactory _screenFactory = ScreenFactory();
-  final UserRepository _userRepository = UserRepository();
+  final UserRepository _userRepository;
 
   BottomNavigationState get state => _state;
 
-  BottomNavigationBarViewModel(this.context) {
+  BottomNavigationBarViewModel(
+    this.context, {
+    required UserRepository userRepository,
+  }) : _userRepository = userRepository {
     _init();
   }
 

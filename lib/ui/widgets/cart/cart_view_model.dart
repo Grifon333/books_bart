@@ -12,14 +12,21 @@ class CartState {
 
 class CartViewModel extends ChangeNotifier {
   final BuildContext context;
-  final OrderRepository _orderRepository = OrderRepository();
-  final BookRepository _bookRepository = BookRepository();
   final CartState _state = CartState();
-  final MainNavigation _mainNavigation = MainNavigation();
+  final MainNavigation _mainNavigation;
+  final OrderRepository _orderRepository;
+  final BookRepository _bookRepository;
 
   CartState get state => _state;
 
-  CartViewModel(this.context) {
+  CartViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required OrderRepository orderRepository,
+    required BookRepository bookRepository,
+  })  : _mainNavigation = mainNavigation,
+        _orderRepository = orderRepository,
+        _bookRepository = bookRepository {
     _init();
   }
 

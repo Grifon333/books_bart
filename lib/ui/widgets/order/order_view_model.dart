@@ -17,14 +17,21 @@ class OrderState {
 
 class OrderViewModel extends ChangeNotifier {
   final BuildContext context;
-  final OrderRepository _orderRepository = OrderRepository();
-  final BookRepository _bookRepository = BookRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
   final OrderState _state = OrderState();
+  final MainNavigation _mainNavigation;
+  final OrderRepository _orderRepository;
+  final BookRepository _bookRepository;
 
   OrderState get state => _state;
 
-  OrderViewModel(this.context) {
+  OrderViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required OrderRepository orderRepository,
+    required BookRepository bookRepository,
+  })  : _mainNavigation = mainNavigation,
+        _orderRepository = orderRepository,
+        _bookRepository = bookRepository {
     _init();
   }
 

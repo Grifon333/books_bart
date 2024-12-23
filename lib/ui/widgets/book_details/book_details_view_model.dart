@@ -26,19 +26,26 @@ class BookDetailsState {
 
 class BookDetailsViewModel extends ChangeNotifier {
   final BuildContext context;
-  final String bookId;
-  final MainNavigation _mainNavigation = MainNavigation();
-  final BookRepository _bookRepository = BookRepository();
-  final OrderRepository _orderRepository = OrderRepository();
-  final UserRepository _userRepository = UserRepository();
   final BookDetailsState _state = BookDetailsState();
+  final String bookId;
+  final MainNavigation _mainNavigation;
+  final BookRepository _bookRepository;
+  final OrderRepository _orderRepository;
+  final UserRepository _userRepository;
 
   BookDetailsState get state => _state;
 
   BookDetailsViewModel(
     this.context,
-    this.bookId,
-  ) {
+    this.bookId, {
+    required MainNavigation mainNavigation,
+    required BookRepository bookRepository,
+    required OrderRepository orderRepository,
+    required UserRepository userRepository,
+  })  : _mainNavigation = mainNavigation,
+        _bookRepository = bookRepository,
+        _orderRepository = orderRepository,
+        _userRepository = userRepository {
     _init();
   }
 

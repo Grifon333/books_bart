@@ -21,12 +21,17 @@ class LoginState {
 class LoginViewModel extends ChangeNotifier {
   final BuildContext context;
   final LoginState _state = LoginState(email: '', password: '');
-  final AuthRepository _authRepository = AuthRepository();
-  final MainNavigation _mainNavigation = MainNavigation();
-
-  LoginViewModel(this.context);
+  final MainNavigation _mainNavigation;
+  final AuthRepository _authRepository;
 
   LoginState get state => _state;
+
+  LoginViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required AuthRepository authRepository,
+  })  : _mainNavigation = mainNavigation,
+        _authRepository = authRepository;
 
   Future<void> onPressedLogin() async {
     if (_state.isProgress) return;
@@ -55,7 +60,7 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await _authRepository.loginWithGoogle();
       _goToMainScreen();
-    } on ApiClientFirebaseAuthException catch(e) {
+    } on ApiClientFirebaseAuthException catch (e) {
       _state.errorMassage = e.massage;
       _state.isProgress = false;
       notifyListeners();

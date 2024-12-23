@@ -5,11 +5,18 @@ import 'package:flutter/material.dart';
 
 class LoaderViewModel {
   final BuildContext context;
-  final AuthRepository _authRepository = AuthRepository();
-  final ApiClient _apiClient = ApiClient.instance;
-  final MainNavigation _mainNavigation = MainNavigation();
+  final MainNavigation _mainNavigation;
+  final ApiClient _apiClient;
+  final AuthRepository _authRepository;
 
-  LoaderViewModel(this.context) {
+  LoaderViewModel(
+    this.context, {
+    required MainNavigation mainNavigation,
+    required ApiClient apiClient,
+    required AuthRepository authRepository,
+  })  : _mainNavigation = mainNavigation,
+        _apiClient = apiClient,
+        _authRepository = authRepository {
     _init();
   }
 
