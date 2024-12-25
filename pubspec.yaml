@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  authentication_repository:
+    path: packages/authentication_repository
+  form_inputs:
+    path: packages/form_inputs
   cupertino_icons: ^1.0.8
   provider: ^6.1.2
   flutter_slidable: ^3.1.2
@@ -21,7 +25,12 @@ dependencies:
   collection: ^1.19.0
   shared_preferences: ^2.3.4
   intl: ^0.20.1
-  dcdg: ^4.1.0
+  bloc: ^8.1.4
+  equatable: ^2.0.7
+  flutter_bloc: ^8.1.6
+  meta: ^1.15.0
+  flow_builder: ^0.1.0
+  formz: ^0.8.0
 
 dev_dependencies:
   flutter_test:
