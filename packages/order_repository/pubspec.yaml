@@ -1,0 +1,24 @@
+name: order_repository
+description: Dart package which manages the authentication domain.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cloud_firestore: ^5.6.0
+  firebase_storage: ^12.3.7
+  bloc: ^8.1.4
+  equatable: ^2.0.7
+  flutter_bloc: ^8.1.6
+  meta: ^1.15.0
+  shared_preferences: ^2.3.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  mocktail: ^1.0.4
