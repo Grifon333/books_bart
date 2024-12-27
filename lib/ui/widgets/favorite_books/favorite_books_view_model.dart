@@ -1,6 +1,7 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +14,8 @@ class FavoriteBooksViewModel extends ChangeNotifier {
   final FavoriteBooksState _state = FavoriteBooksState();
   final MainNavigation _mainNavigation;
   final BookRepository _bookRepository;
-  final UserRepository _userRepository;
+  final AuthenticationRepository _authenticationRepository;
+  final ScreenFactory _screenFactory = ScreenFactory();
 
   FavoriteBooksState get state => _state;
 
@@ -22,16 +24,16 @@ class FavoriteBooksViewModel extends ChangeNotifier {
     required,
     required MainNavigation mainNavigation,
     required BookRepository bookRepository,
-    required UserRepository userRepository,
+    required AuthenticationRepository authenticationRepository,
   })  : _mainNavigation = mainNavigation,
         _bookRepository = bookRepository,
-        _userRepository = userRepository {
+        _authenticationRepository = authenticationRepository {
     _init();
   }
 
   Future<void> _init() async {
     _state.books.clear();
-    String uid = (await _userRepository.getCurrentUserData()).uid;
+    String uid = _authenticationRepository.currentUser.uid;
     final favoriteBooks = await _bookRepository.getFavoriteBooks(uid);
     for (var favoriteBook in favoriteBooks.entries) {
       Book book =
@@ -60,10 +62,11 @@ class FavoriteBooksViewModel extends ChangeNotifier {
   }
 
   void onTapFavoriteBook(int index) {
-    _mainNavigation.goToBookDetailsScreen(
-      context,
-      _state.books[index].bookId,
-    );
+    Navigator.of(context).push<void>(MaterialPageRoute<void>(
+      builder: (_) => _screenFactory.makeBookDetails(
+        _state.books[index].bookId,
+      ),
+    ));
   }
 }
 
@@ -79,9 +82,7 @@ class BookInfo {
     required this.id,
     required this.title,
     required this.author,
-    // required this.rating,
     this.isFavorite = true,
-    // required this.price,
     required this.bookId,
     required this.imageURL,
   });

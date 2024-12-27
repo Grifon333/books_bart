@@ -1,11 +1,10 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
-import 'package:books_bart/domain/repositories/user_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class BookDetailsState {
@@ -28,24 +27,21 @@ class BookDetailsViewModel extends ChangeNotifier {
   final BuildContext context;
   final BookDetailsState _state = BookDetailsState();
   final String bookId;
-  final MainNavigation _mainNavigation;
   final BookRepository _bookRepository;
   final OrderRepository _orderRepository;
-  final UserRepository _userRepository;
+  final AuthenticationRepository _authenticationRepository;
 
   BookDetailsState get state => _state;
 
   BookDetailsViewModel(
     this.context,
     this.bookId, {
-    required MainNavigation mainNavigation,
     required BookRepository bookRepository,
     required OrderRepository orderRepository,
-    required UserRepository userRepository,
-  })  : _mainNavigation = mainNavigation,
-        _bookRepository = bookRepository,
+    required AuthenticationRepository authenticationRepository,
+  })  : _bookRepository = bookRepository,
         _orderRepository = orderRepository,
-        _userRepository = userRepository {
+        _authenticationRepository = authenticationRepository {
     _init();
   }
 
@@ -98,7 +94,8 @@ class BookDetailsViewModel extends ChangeNotifier {
   }
 
   Future<bool> _isFavoriteBook() async {
-    String uid = (await _userRepository.getCurrentUserData()).uid;
+    final user = _authenticationRepository.currentUser;
+    String uid = user.uid;
     FavoriteBook favoriteBook = FavoriteBook(uid: uid, idBook: bookId);
     return await _bookRepository.isFavoriteBook(favoriteBook);
   }
@@ -117,9 +114,7 @@ class BookDetailsViewModel extends ChangeNotifier {
     }
   }
 
-  void onPressedReturn() {
-    _mainNavigation.popFromBookDetailsScreen(context);
-  }
+  void onPressedReturn() => Navigator.of(context).pop();
 
   void onTapVariantOfBook(int index) {
     _state.selectVariantOfBook = index;
@@ -134,7 +129,8 @@ class BookDetailsViewModel extends ChangeNotifier {
   }
 
   Future<void> onPressedFavorite() async {
-    String uid = (await _userRepository.getCurrentUserData()).uid;
+    final user = _authenticationRepository.currentUser;
+    String uid = user.uid;
     FavoriteBook favoriteBook = FavoriteBook(uid: uid, idBook: bookId);
     final oldFavorite = _state.isFavoriteBook;
     if (oldFavorite) {
@@ -157,8 +153,8 @@ class BookDetailsViewModel extends ChangeNotifier {
   }
 
   Future<void> onPressedAddReview() async {
-    String username =
-        (await _userRepository.getCurrentUserData()).name ?? 'no name';
+    final user = _authenticationRepository.currentUser;
+    String username = user.name ?? 'no name';
     Review review = Review(
       body: _state.reviewText,
       rating: _state.countStars,

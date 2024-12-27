@@ -1,7 +1,6 @@
 import 'package:books_bart/domain/entity/book.dart';
+import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/user_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class HomeState {
@@ -10,24 +9,15 @@ class HomeState {
   String searchTitle = '';
   bool isFiltered = false;
   bool canReturn = false;
-  String nickname = '';
 }
 
 class HomeViewModel extends ChangeNotifier {
   final BuildContext context;
   final HomeState _state = HomeState();
-  final MainNavigation _mainNavigation;
   final BookRepository _bookRepository;
-  final UserRepository _userRepository;
 
-  HomeViewModel(
-    this.context, {
-    required MainNavigation mainNavigation,
-    required BookRepository bookRepository,
-    required UserRepository userRepository,
-  })  : _mainNavigation = mainNavigation,
-        _bookRepository = bookRepository,
-        _userRepository = userRepository {
+  HomeViewModel(this.context, {required BookRepository bookRepository})
+      : _bookRepository = bookRepository {
     _init();
   }
 
@@ -35,7 +25,6 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> _init() async {
     await _getBooks();
-    await _getUserNickname();
     notifyListeners();
   }
 
@@ -68,17 +57,14 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> _getUserNickname() async {
-    final userData = await _userRepository.getCurrentUserData();
-    _state.nickname = userData.name ?? 'Friend';
-  }
-
-  Future<void> onRefresh() async {
-    await _init();
-  }
+  Future<void> onRefresh() async => await _init();
 
   void onTapBookInfo(String bookId) {
-    _mainNavigation.goToBookDetailsScreen(context, bookId);
+    ScreenFactory screenFactory = ScreenFactory();
+    Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+          builder: (_) => screenFactory.makeBookDetails(bookId)),
+    );
   }
 
   void onChangeSearchTitle(String value) {

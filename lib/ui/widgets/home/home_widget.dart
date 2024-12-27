@@ -1,3 +1,4 @@
+import 'package:books_bart/ui/widgets/app/app.dart';
 import 'package:books_bart/ui/widgets/home/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,8 +32,6 @@ class _BodyWidget extends StatelessWidget {
         const _TitleWidget(),
         const SizedBox(height: 24),
         const _SearchWidget(),
-        // SizedBox(height: 36),
-        // _GenreListWidget(),
         const SizedBox(height: 24),
         isSearch
             ? const _FilteredListBooksWidget()
@@ -105,7 +104,8 @@ class _TitleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String name = context.select((HomeViewModel vm) => vm.state.nickname);
+    String name =
+        context.select((AppBloc vm) => vm.state.user.name) ?? 'Friend';
     return Text(
       'Hello $name!\nWhich book do you want to buy?',
       style: const TextStyle(
@@ -129,12 +129,7 @@ class _SearchWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF5EEE5),
         borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.grey,
-            blurRadius: 4,
-          )
-        ],
+        boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 4)],
       ),
       child: Row(
         children: [
@@ -147,67 +142,8 @@ class _SearchWidget extends StatelessWidget {
               ),
             ),
           ),
-          IconButton(
-            onPressed: onPressed,
-            icon: const Icon(Icons.filter_alt),
-          ),
+          IconButton(onPressed: onPressed, icon: const Icon(Icons.filter_alt)),
         ],
-      ),
-    );
-  }
-}
-
-class _GenreListWidget extends StatelessWidget {
-  const _GenreListWidget();
-
-  @override
-  Widget build(BuildContext context) {
-    final List<String> genresList = [
-      'All',
-      'eBooks',
-      'New',
-      'Bestseller',
-      'Audiobooks',
-      'Fantasy',
-    ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (int i = 0; i < genresList.length; i++)
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: _GenreTileWidget(genresList[i]),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _GenreTileWidget extends StatelessWidget {
-  final String title;
-
-  const _GenreTileWidget(this.title);
-
-  void onPressed() {
-    debugPrint('Group: $title');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: const ButtonStyle(
-        minimumSize: MaterialStatePropertyAll(Size(0, 0)),
-        padding: MaterialStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        ),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 16),
       ),
     );
   }
@@ -285,9 +221,7 @@ class _ListBooksInGroupWidget extends StatelessWidget {
 class _BookTileWidget extends StatelessWidget {
   final BookInfo _bookInfo;
 
-  const _BookTileWidget(
-    this._bookInfo,
-  );
+  const _BookTileWidget(this._bookInfo);
 
   @override
   Widget build(BuildContext context) {
@@ -316,19 +250,13 @@ class _BookTileWidget extends StatelessWidget {
               maxLines: 2,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color(0xFF7E675E),
-              ),
+              style: const TextStyle(fontSize: 16, color: Color(0xFF7E675E)),
             ),
             Text(
               _bookInfo.authors,
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Color(0xFFF06267),
-              ),
+              style: const TextStyle(fontSize: 12, color: Color(0xFFF06267)),
             ),
           ],
         ),

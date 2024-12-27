@@ -2,10 +2,7 @@ import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:flutter/material.dart';
 
 class MainNavigationNameRoute {
-  static const loader = '/';
   static const home = '/home';
-  static const signup = '/signup';
-  static const login = '/login';
   static const favoriteBooks = '/favorite_books';
   static const settings = '/settings';
   static const bookDetails = '/home/book_details';
@@ -20,13 +17,9 @@ class MainNavigationNameRoute {
 
 class MainNavigation {
   static final _screenFactory = ScreenFactory();
-  final String initialRoute = MainNavigationNameRoute.loader;
 
   final Map<String, WidgetBuilder> routes = {
-    MainNavigationNameRoute.loader: (_) => _screenFactory.makeLoader(),
     MainNavigationNameRoute.home: (_) => _screenFactory.makeHome(),
-    MainNavigationNameRoute.signup: (_) => _screenFactory.makeSignup(),
-    MainNavigationNameRoute.login: (_) => _screenFactory.makeLogin(),
     MainNavigationNameRoute.favoriteBooks: (_) =>
         _screenFactory.makeFavoriteBooks(),
     MainNavigationNameRoute.settings: (_) => _screenFactory.makeSettings(),
@@ -59,23 +52,6 @@ class MainNavigation {
     }
   }
 
-  void goToMainScreen(BuildContext context) {
-    Navigator.of(context)
-        .pushReplacementNamed(MainNavigationNameRoute.bottomNavigationBar);
-  }
-
-  void goToSignupScreen(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.signup);
-  }
-
-  void goToLoginScreen(BuildContext context) {
-    Navigator.of(context).pushReplacementNamed(MainNavigationNameRoute.login);
-  }
-
-  void goToProfileScreen(BuildContext context) {
-    Navigator.of(context).pushNamed(MainNavigationNameRoute.profile);
-  }
-
   void showAddFormBookInfo(BuildContext context) {
     showDialog(
       context: context,
@@ -88,39 +64,5 @@ class MainNavigation {
       context: context,
       builder: (context) => _screenFactory.makeEditFormBookInfo(bookId),
     );
-  }
-
-  void goToBookDetailsScreen(BuildContext context, String bookId) {
-    Navigator.of(context).pushNamed(
-      MainNavigationNameRoute.bookDetails,
-      arguments: bookId,
-    );
-  }
-
-  void popFromBookDetailsScreen(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-
-  void goToOrderScreen(BuildContext context) {
-    Navigator.of(context).pushNamed(MainNavigationNameRoute.order);
-  }
-
-  void popFromOrderScreen(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-
-  void goToHistoryScreen(BuildContext context) {
-    Navigator.of(context).pushNamed(MainNavigationNameRoute.history);
-  }
-
-  void pop(BuildContext context) {
-    Navigator.of(context).pop();
-  }
-
-  void goToFirstScreen(BuildContext context, bool isAuth) {
-    final route = isAuth
-        ? MainNavigationNameRoute.bottomNavigationBar
-        : MainNavigationNameRoute.login;
-    Navigator.of(context).pushReplacementNamed(route);
   }
 }

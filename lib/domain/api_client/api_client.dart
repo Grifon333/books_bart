@@ -4,11 +4,7 @@ import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
-import 'package:books_bart/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' as cloud_firestore;
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ApiClientFirebaseAuthException implements Exception {
@@ -24,181 +20,19 @@ class ApiClientFirestoreException implements Exception {
 }
 
 class ApiClient {
-  late FirebaseAuth _firebaseAuth;
   late cloud_firestore.FirebaseFirestore _firebaseFirestore;
   late FirebaseStorage _firebaseStorage;
 
-  ApiClient._();
+  ApiClient._() {
+    _init();
+  }
 
   static final ApiClient instance = ApiClient._();
 
-  Future<void> init() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    _firebaseAuth = FirebaseAuth.instance;
+  void _init() {
     _firebaseFirestore = cloud_firestore.FirebaseFirestore.instance;
     _firebaseStorage = FirebaseStorage.instance;
   }
-
-  /// --------------------------AUTH--------------------------------------------
-
-  Future<UserCredential?> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    try {
-      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'invalid-email') {
-        throw ApiClientFirebaseAuthException(
-            'The email address is badly formatted.');
-      } else if (e.code == 'user-not-found') {
-        throw ApiClientFirebaseAuthException('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        throw ApiClientFirebaseAuthException(
-            'Wrong password provided for that user.');
-      } else if (e.code == 'invalid-credential') {
-        throw ApiClientFirebaseAuthException(
-            'Email or password are incorrect.');
-      } else {
-        throw ApiClientFirebaseAuthException('Error with server. Try late.');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<UserCredential?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      final userCredential =
-          await _firebaseAuth.signInWithCredential(credential);
-      return userCredential;
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<UserCredential?> createUserWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    try {
-      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        throw ApiClientFirebaseAuthException(
-            'The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        throw ApiClientFirebaseAuthException(
-            'The account already exists for that email.');
-      } else {
-        throw ApiClientFirebaseAuthException('Error with server. Try late.');
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> sendEmailVerification(User? user) async {
-    try {
-      await user?.sendEmailVerification();
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> updateDisplayName(String nickname) async {
-    try {
-      await _firebaseAuth.currentUser?.updateDisplayName(nickname);
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> updatePassword(String password) async {
-    try {
-      // await _firebaseAuth.sendPasswordResetEmail(
-      //   email: _firebaseAuth.currentUser?.email ?? '',
-      // );
-      await _firebaseAuth.currentUser?.updatePassword(password);
-    } on FirebaseAuthException catch (e) {
-      throw Exception(e.message);
-      // throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> updatePhoneNumber(String phoneNumber) async {
-    try {
-      await _firebaseAuth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (credential) async {
-          await _firebaseAuth.currentUser?.updatePhoneNumber(credential);
-        },
-        verificationFailed: (err) {
-          throw ApiClientFirebaseAuthException('Invalid code. Try again');
-        },
-        codeSent: (verificationId, [forceResendingToken]) async {
-          String code = '123123';
-          final credential = PhoneAuthProvider.credential(
-            verificationId: verificationId,
-            smsCode: code,
-          );
-          await _firebaseAuth.currentUser?.updatePhoneNumber(credential);
-        },
-        codeAutoRetrievalTimeout: (_) {},
-      );
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> updatePhoto(String photoURL) async {
-    try {
-      await _firebaseAuth.currentUser?.updatePhotoURL(photoURL);
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  Future<void> logout() async {
-    try {
-      await _firebaseAuth.signOut();
-    } on FirebaseAuthException {
-      throw ApiClientFirebaseAuthException('Error with server. Try late.');
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
-  /// --------------------------------------------------------------------------
 
   /// -----------------------------BOOK-----------------------------------------
 

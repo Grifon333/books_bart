@@ -1,10 +1,10 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/book_in_order.dart';
 import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
-import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,23 +17,23 @@ class HistoryState {
 class HistoryViewModel extends ChangeNotifier {
   final BuildContext context;
   final HistoryState _state = HistoryState();
+  UserRole? _role;
   final OrderRepository _orderRepository;
   final BookRepository _bookRepository;
-  final UserRepository _userRepository;
-  String? _role;
+  final AuthenticationRepository _authenticationRepository;
 
   HistoryState get state => _state;
 
-  String get role => _role ?? '';
+  String get role => _role?.name ?? '';
 
   HistoryViewModel(
     this.context, {
     required OrderRepository orderRepository,
     required BookRepository bookRepository,
-    required UserRepository userRepository,
+    required AuthenticationRepository authenticationRepository,
   })  : _orderRepository = orderRepository,
         _bookRepository = bookRepository,
-        _userRepository = userRepository {
+        _authenticationRepository = authenticationRepository {
     _init();
   }
 
@@ -48,8 +48,9 @@ class HistoryViewModel extends ChangeNotifier {
 
   Future<void> _getOrders() async {
     _state.orders.clear();
-    _role ??= await _userRepository.getRole();
-    final Map<String, Order> orders = _role == 'manager'
+    final user = _authenticationRepository.currentUser;
+    _role ??= user.role;
+    final Map<String, Order> orders = _role == UserRole.manager
         ? await _orderRepository.getAllOrders()
         : await _orderRepository.getOrdersOfCurrentUser();
     for (var orderEntry in orders.entries) {

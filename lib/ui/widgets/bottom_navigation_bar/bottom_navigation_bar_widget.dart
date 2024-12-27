@@ -5,7 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BottomNavigationBarWidget extends StatefulWidget {
+  static final ScreenFactory _screenFactory = ScreenFactory();
+
   const BottomNavigationBarWidget({super.key});
+
+  static Page<void> page() {
+    return MaterialPage<void>(child: _screenFactory.makeBottomNavigationBar());
+  }
 
   @override
   State<BottomNavigationBarWidget> createState() =>
@@ -14,8 +20,8 @@ class BottomNavigationBarWidget extends StatefulWidget {
 
 class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
     with SingleTickerProviderStateMixin {
+  final ScreenFactory screenFactory = ScreenFactory();
   late final BottomNavigationBarViewModel _model;
-  final _screenFactory = ScreenFactory();
   late AnimationController _animationController;
 
   @override
@@ -24,18 +30,14 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
-    )..addListener(() {
-        setState(() {});
-      });
+    )..addListener(() => setState(() {}));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _model = context.read<BottomNavigationBarViewModel>()
-      ..addListener(() {
-        setState(() {});
-      });
+      ..addListener(() => setState(() {}));
     _model.initAnimations(_animationController);
   }
 
@@ -62,7 +64,7 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
             width: 288,
             left: isOpenSideBar ? 0 : -288,
             height: MediaQuery.of(context).size.height,
-            child: _screenFactory.makeSideBar(),
+            child: screenFactory.makeSideBar(),
           ),
           Transform(
             alignment: Alignment.center,
@@ -92,12 +94,9 @@ class _BottomNavigationBarWidgetState extends State<BottomNavigationBarWidget>
             child: IconButton(
               onPressed: () => _model.onPressedSideBar(_animationController),
               style: const ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(Colors.white),
+                backgroundColor: WidgetStatePropertyAll(Colors.white),
               ),
-              icon: const Icon(
-                Icons.menu,
-                size: 32,
-              ),
+              icon: const Icon(Icons.menu, size: 32),
             ),
           ),
         ],
@@ -124,11 +123,7 @@ class _BottomNavigationBar extends StatelessWidget {
           color: model.state.bottomNavigationBarColor,
           borderRadius: BorderRadius.circular(30),
           boxShadow: const [
-            BoxShadow(
-              color: Colors.grey,
-              blurRadius: 5,
-              offset: Offset(0, 3),
-            ),
+            BoxShadow(color: Colors.grey, blurRadius: 5, offset: Offset(0, 3)),
           ],
         ),
         child: SizedBox(
@@ -145,13 +140,8 @@ class _BottomNavigationBar extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _TopIdentifier(
-                          isSelect: isSelect,
-                        ),
-                        Icon(
-                          model.state.icons[index],
-                          size: 32,
-                        ),
+                        _TopIdentifier(isSelect: isSelect),
+                        Icon(model.state.icons[index], size: 32),
                       ],
                     ),
                   );
@@ -168,9 +158,7 @@ class _BottomNavigationBar extends StatelessWidget {
 class _TopIdentifier extends StatelessWidget {
   final bool isSelect;
 
-  const _TopIdentifier({
-    required this.isSelect,
-  });
+  const _TopIdentifier({required this.isSelect});
 
   @override
   Widget build(BuildContext context) {

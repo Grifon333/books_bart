@@ -1,5 +1,4 @@
-import 'package:books_bart/domain/repositories/user_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:flutter/material.dart';
 
 class ErrorsMassage {
@@ -33,17 +32,14 @@ class ProfileState {
 class ProfileViewModel extends ChangeNotifier {
   final BuildContext context;
   final ProfileState _state = ProfileState();
-  final MainNavigation _mainNavigation;
-  final UserRepository _userRepository;
+  final AuthenticationRepository _authenticationRepository;
 
   ProfileState get state => _state;
 
   ProfileViewModel(
     this.context, {
-    required MainNavigation mainNavigation,
-    required UserRepository userRepository,
-  })  : _mainNavigation = mainNavigation,
-        _userRepository = userRepository {
+    required AuthenticationRepository authenticationRepository,
+  }) : _authenticationRepository = authenticationRepository {
     _init();
   }
 
@@ -52,17 +48,15 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   Future<void> _updateState() async {
-    final user = await _userRepository.getCurrentUserData();
+    final user = _authenticationRepository.currentUser;
     if (user.name != null) _state.nickname = user.name!;
     _state.email = user.email;
     if (user.phoneNumber != null) _state.phoneNumber = user.phoneNumber!;
-    if (user.urlPhoto != null) _state.imageURL = user.urlPhoto!;
+    if (user.photoUrl != null) _state.imageURL = user.photoUrl!;
     notifyListeners();
   }
 
-  void onPopUp() {
-    _mainNavigation.pop(context);
-  }
+  void onPopUp() => Navigator.of(context).pop();
 
   void onEdit() {
     _state.isEdit = true;
@@ -71,14 +65,14 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onSave() {
+  void onSave() async {
     _state.isEdit = false;
     if (_state.nicknameError == null && _state.phoneNumberError == null) {
       if (_state.oldNickname != _state.nickname) {
-        _userRepository.updateNickname(_state.nickname);
+        await _authenticationRepository.updateDisplayName(_state.nickname);
       }
       if (_state.oldPhoneNumber != _state.phoneNumber) {
-        _userRepository.updatePhoneNumber(_state.phoneNumber);
+        await _authenticationRepository.updatePhoneNumber(_state.phoneNumber);
       }
     }
     notifyListeners();
@@ -141,7 +135,7 @@ class ProfileViewModel extends ChangeNotifier {
 
   Future<void> _changePassword() async {
     try {
-      await _userRepository.updatePassword(_state.newPassword);
+      await _authenticationRepository.updatePassword(_state.newPassword);
     } catch (e) {
       _state.newPasswordError = e.toString();
       notifyListeners();

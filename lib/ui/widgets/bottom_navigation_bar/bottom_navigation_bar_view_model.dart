@@ -1,5 +1,5 @@
+import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/factories/screen_factory.dart';
-import 'package:books_bart/domain/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigationState {
@@ -16,21 +16,21 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
   final BuildContext context;
   final BottomNavigationState _state = BottomNavigationState();
   final ScreenFactory _screenFactory = ScreenFactory();
-  final UserRepository _userRepository;
+  final AuthenticationRepository _authenticationRepository;
 
   BottomNavigationState get state => _state;
 
   BottomNavigationBarViewModel(
     this.context, {
-    required UserRepository userRepository,
-  }) : _userRepository = userRepository {
+    required AuthenticationRepository authenticationRepository,
+  }) : _authenticationRepository = authenticationRepository {
     _init();
   }
 
   Future<void> _init() async {
     if (_state.icons.isNotEmpty) return;
-    String role = await _userRepository.getRole();
-    if (role == 'customer') {
+    final user = _authenticationRepository.currentUser;
+    if (user.role == UserRole.customer) {
       _state.icons.addAll([
         Icons.book,
         Icons.bookmark,
@@ -43,7 +43,7 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
         _screenFactory.makeCart(),
         _screenFactory.makeSettings(),
       ]);
-    } else if (role == 'manager') {
+    } else if (user.role == UserRole.manager) {
       _state.icons.addAll([
         Icons.book,
         Icons.add,

@@ -3,7 +3,6 @@ import 'package:books_bart/domain/entity/book_in_order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class OrderState {
@@ -18,7 +17,6 @@ class OrderState {
 class OrderViewModel extends ChangeNotifier {
   final BuildContext context;
   final OrderState _state = OrderState();
-  final MainNavigation _mainNavigation;
   final OrderRepository _orderRepository;
   final BookRepository _bookRepository;
 
@@ -26,11 +24,9 @@ class OrderViewModel extends ChangeNotifier {
 
   OrderViewModel(
     this.context, {
-    required MainNavigation mainNavigation,
     required OrderRepository orderRepository,
     required BookRepository bookRepository,
-  })  : _mainNavigation = mainNavigation,
-        _orderRepository = orderRepository,
+  })  : _orderRepository = orderRepository,
         _bookRepository = bookRepository {
     _init();
   }
@@ -75,7 +71,7 @@ class OrderViewModel extends ChangeNotifier {
   Future<void> onPressedSubmitOrder() async {
     await _orderRepository.submitOrder(_state.totalPrice);
     if (!context.mounted) return;
-    _mainNavigation.popFromOrderScreen(context);
+    Navigator.of(context).pop();
   }
 }
 

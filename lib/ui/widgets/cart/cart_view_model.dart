@@ -1,6 +1,7 @@
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/book_in_order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
+import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
 import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
@@ -13,19 +14,17 @@ class CartState {
 class CartViewModel extends ChangeNotifier {
   final BuildContext context;
   final CartState _state = CartState();
-  final MainNavigation _mainNavigation;
   final OrderRepository _orderRepository;
   final BookRepository _bookRepository;
+  final ScreenFactory _screenFactory = ScreenFactory();
 
   CartState get state => _state;
 
   CartViewModel(
     this.context, {
-    required MainNavigation mainNavigation,
     required OrderRepository orderRepository,
     required BookRepository bookRepository,
-  })  : _mainNavigation = mainNavigation,
-        _orderRepository = orderRepository,
+  })  : _orderRepository = orderRepository,
         _bookRepository = bookRepository {
     _init();
   }
@@ -96,7 +95,9 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void onPressedOrder() {
-    _mainNavigation.goToOrderScreen(context);
+    Navigator.of(context).push<void>(MaterialPageRoute<void>(
+      builder: (_) => _screenFactory.makeOrder(),
+    ));
   }
 
   Future<void> onRefresh() async {
@@ -104,10 +105,11 @@ class CartViewModel extends ChangeNotifier {
   }
 
   void onTapCartBookInfo(int index) {
-    _mainNavigation.goToBookDetailsScreen(
-      context,
-      _state.booksInfo[index].bookId,
-    );
+    Navigator.of(context).push<void>(MaterialPageRoute<void>(
+      builder: (_) => _screenFactory.makeBookDetails(
+        _state.booksInfo[index].bookId,
+      ),
+    ));
   }
 }
 
