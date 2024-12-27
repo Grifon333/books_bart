@@ -1,9 +1,8 @@
 import 'package:books_bart/domain/entity/book.dart';
-import 'package:books_bart/domain/entity/book_in_order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:order_repository/order_repository.dart';
 
 class OrderState {
   List<BookInfo> booksInfo = [];

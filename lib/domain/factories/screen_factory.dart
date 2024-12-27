@@ -1,6 +1,5 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:books_bart/ui/widgets/book_details/book_details_view_model.dart';
 import 'package:books_bart/ui/widgets/book_details/book_details_widget.dart';
@@ -27,6 +26,7 @@ import 'package:books_bart/ui/widgets/settings/settings_widget.dart';
 import 'package:books_bart/ui/widgets/sidebar/side_bar_view_model.dart';
 import 'package:books_bart/ui/widgets/sidebar/side_bar_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:order_repository/order_repository.dart';
 import 'package:provider/provider.dart';
 
 class ScreenFactory {
@@ -48,7 +48,6 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => FavoriteBooksViewModel(
         context,
-        mainNavigation: _mainNavigation,
         bookRepository: _bookRepository,
         authenticationRepository: context.read<AuthenticationRepository>(),
       ),

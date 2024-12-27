@@ -2,7 +2,6 @@ import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/ui/navigation/main_navigation.dart';
 import 'package:flutter/material.dart';
 
 class FavoriteBooksState {
@@ -12,7 +11,6 @@ class FavoriteBooksState {
 class FavoriteBooksViewModel extends ChangeNotifier {
   final BuildContext context;
   final FavoriteBooksState _state = FavoriteBooksState();
-  final MainNavigation _mainNavigation;
   final BookRepository _bookRepository;
   final AuthenticationRepository _authenticationRepository;
   final ScreenFactory _screenFactory = ScreenFactory();
@@ -22,11 +20,9 @@ class FavoriteBooksViewModel extends ChangeNotifier {
   FavoriteBooksViewModel(
     this.context, {
     required,
-    required MainNavigation mainNavigation,
     required BookRepository bookRepository,
     required AuthenticationRepository authenticationRepository,
-  })  : _mainNavigation = mainNavigation,
-        _bookRepository = bookRepository,
+  })  : _bookRepository = bookRepository,
         _authenticationRepository = authenticationRepository {
     _init();
   }

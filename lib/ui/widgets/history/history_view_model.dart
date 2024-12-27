@@ -1,12 +1,10 @@
 import 'package:authentication_repository/authentication_repository.dart';
 import 'package:books_bart/domain/entity/book.dart';
-import 'package:books_bart/domain/entity/book_in_order.dart';
-import 'package:books_bart/domain/entity/order.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:order_repository/order_repository.dart';
 
 class HistoryState {
   List<OrderInfo> orders = [];
@@ -52,7 +50,7 @@ class HistoryViewModel extends ChangeNotifier {
     _role ??= user.role;
     final Map<String, Order> orders = _role == UserRole.manager
         ? await _orderRepository.getAllOrders()
-        : await _orderRepository.getOrdersOfCurrentUser();
+        : await _orderRepository.getOrdersOfCurrentUser(user.uid);
     for (var orderEntry in orders.entries) {
       final Order order = orderEntry.value;
       if (order.status == OrderStatus.creating) continue;
@@ -64,7 +62,7 @@ class HistoryViewModel extends ChangeNotifier {
         books: booksInfo,
         paymentMethod: order.paymentMethod,
         price: '${order.price}\$',
-        statusColor: order.status.getColor(),
+        statusColor: _coloredOrder[order.status] ?? Colors.black,
       ));
     }
     _state.orders.sort((a, b) => a.compareTo(b));
@@ -95,7 +93,7 @@ class HistoryViewModel extends ChangeNotifier {
     if (status == null) return;
     _state.orders[index].status = status;
     _state.orders[index].statusColor =
-        OrderStatus.fromString(status).getColor();
+        _coloredOrder[OrderStatus.fromString(status)] ?? Colors.black;
     _orderRepository.updateOrderStatus(_state.orders[index].id, status);
     notifyListeners();
   }
@@ -103,6 +101,15 @@ class HistoryViewModel extends ChangeNotifier {
   Future<void> onRefresh() async {
     await _init();
   }
+
+  final Map<OrderStatus, Color> _coloredOrder = {
+    OrderStatus.newOrder: Colors.red,
+    OrderStatus.confirmed: Colors.blue,
+    OrderStatus.processing: Colors.yellow,
+    OrderStatus.assembled: Colors.green,
+    OrderStatus.delivered: Colors.teal,
+    OrderStatus.completed: Colors.grey,
+  };
 }
 
 class OrderInfo {

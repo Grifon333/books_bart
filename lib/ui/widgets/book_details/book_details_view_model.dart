@@ -4,8 +4,8 @@ import 'package:books_bart/domain/entity/favorite_book.dart';
 import 'package:books_bart/domain/entity/review.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-import 'package:books_bart/domain/repositories/order_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:order_repository/order_repository.dart';
 
 class BookDetailsState {
   String title = '';
@@ -123,6 +123,7 @@ class BookDetailsViewModel extends ChangeNotifier {
 
   void onPressedAddToCart() {
     _orderRepository.addBookInOrder(
+      _authenticationRepository.currentUser.uid,
       bookId,
       _state.variantsOfBook[_state.selectVariantOfBook].id,
     );

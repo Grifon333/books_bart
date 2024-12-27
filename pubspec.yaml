@@ -1,6 +1,6 @@
 name: books_bart
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   authentication_repository:
     path: packages/authentication_repository
+  order_repository:
+    path: packages/order_repository
   form_inputs:
     path: packages/form_inputs
   cupertino_icons: ^1.0.8
