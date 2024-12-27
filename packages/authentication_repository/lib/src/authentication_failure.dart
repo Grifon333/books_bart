@@ -42,7 +42,45 @@ class LogInWithGoogleFailure implements Exception {
   }
 }
 
-class LogOutFailure implements Exception {}
+class LogOutFailure implements Exception {
+  const LogOutFailure();
+}
+
+class UpdateDisplayNameFailure implements Exception {
+  const UpdateDisplayNameFailure();
+}
+
+class UpdatePasswordFailure implements Exception {
+  final String message;
+
+  const UpdatePasswordFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  factory UpdatePasswordFailure.fromCode(String code) {
+    return _messageByCode.containsKey(code)
+        ? UpdatePasswordFailure(_messageByCode[code]!)
+        : const UpdatePasswordFailure();
+  }
+}
+
+class UpdatePhoneNumberFailure implements Exception {
+  final String message;
+
+  const UpdatePhoneNumberFailure([
+    this.message = 'An unknown exception occurred.',
+  ]);
+
+  factory UpdatePhoneNumberFailure.fromCode(String code) {
+    return _messageByCode.containsKey(code)
+        ? UpdatePhoneNumberFailure(_messageByCode[code]!)
+        : const UpdatePhoneNumberFailure();
+  }
+}
+
+class UpdatePhotoURLFailure implements Exception {
+  const UpdatePhotoURLFailure();
+}
 
 const Map<String, String> _messageByCode = {
   'invalid-email': 'Email is not valid or badly formatted.',

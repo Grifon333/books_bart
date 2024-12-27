@@ -103,13 +103,70 @@ class AuthenticationRepository {
         _googleSignIn.signOut(),
       ]);
     } catch (_) {
-      throw LogOutFailure();
+      throw const LogOutFailure();
+    }
+  }
+
+  Future<void> updateDisplayName(String displayName) async {
+    try {
+      await _firebaseAuth.currentUser?.updateDisplayName(displayName);
+    } catch (_) {
+      throw const UpdateDisplayNameFailure();
+    }
+  }
+
+  Future<void> updatePassword(String password) async {
+    try {
+      await _firebaseAuth.currentUser?.updatePassword(password);
+    } on firebase_auth.FirebaseException catch (e) {
+      throw UpdatePasswordFailure(e.code);
+    } catch (_) {
+      throw const UpdatePasswordFailure();
+    }
+  }
+
+  Future<void> updatePhoneNumber(String phoneNumber) async {
+    try {
+      await _firebaseAuth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (credential) async {
+          await _firebaseAuth.currentUser?.updatePhoneNumber(credential);
+        },
+        verificationFailed: (e) => throw UpdatePhoneNumberFailure(e.code),
+        codeSent: (verificationId, [forceResendingToken]) async {
+          String code = '123123';
+          final credential = firebase_auth.PhoneAuthProvider.credential(
+            verificationId: verificationId,
+            smsCode: code,
+          );
+          await _firebaseAuth.currentUser?.updatePhoneNumber(credential);
+        },
+        codeAutoRetrievalTimeout: (_) {},
+      );
+    } on firebase_auth.FirebaseException catch (e) {
+      throw UpdatePhoneNumberFailure(e.code);
+    } catch (_) {
+      throw const UpdatePhoneNumberFailure();
+    }
+  }
+
+  Future<void> updatePhoto(String photoURL) async {
+    try {
+      await _firebaseAuth.currentUser?.updatePhotoURL(photoURL);
+    } catch (_) {
+      throw const UpdatePhotoURLFailure();
     }
   }
 }
 
 extension on firebase_auth.User {
   User get toUser {
-    return User(uid: uid, name: displayName, email: email ?? 'no-email');
+    return User(
+      uid: uid,
+      name: displayName,
+      email: email ?? 'no-email',
+      photoUrl: photoURL,
+      phoneNumber: phoneNumber,
+    );
   }
 }

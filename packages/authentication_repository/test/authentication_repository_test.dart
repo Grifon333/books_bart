@@ -13,6 +13,8 @@ const _mockFirebaseUserUid = 'mock-uid';
 const _mockFirebaseUserName = 'mock-name';
 const _mockFirebaseUserEmail = 'mock-email';
 
+const _mockFirebaseNewUserName = 'mock-new-name';
+
 class MockCacheClient extends Mock implements CacheClient {}
 
 class MockFirebaseAuth extends Mock implements firebase_auth.FirebaseAuth {}
@@ -334,6 +336,22 @@ void main() {
         ).thenReturn(user);
         expect(authenticationRepository.currentUser, equals(user));
       });
+    });
+
+    group('updateDisplayName', () {
+      test('call updateDisplayName', () async {
+        when(() => firebaseAuth.currentUser?.updateDisplayName(any()))
+            .thenAnswer((_) => null);
+        await authenticationRepository.updateDisplayName(
+          _mockFirebaseNewUserName,
+        );
+        verify(() => firebaseAuth.currentUser?.updateDisplayName(any()))
+            .called(1);
+      });
+      // test('', () {});
+      // test('', () {});
+      // test('', () {});
+      // test('', () {});
     });
   });
 }
