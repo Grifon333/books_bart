@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 
 class SideBarViewModel extends ChangeNotifier {
   final BuildContext context;
-  final ScreenFactory _screenFactory = ScreenFactory();
+  final ScreenFactory _screenFactory;
 
-  SideBarViewModel(this.context);
+  SideBarViewModel(this.context, {required ScreenFactory screenFactory})
+      : _screenFactory = screenFactory;
 
   void onShowProfile() {
     Navigator.of(context).push<void>(MaterialPageRoute<void>(

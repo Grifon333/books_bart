@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart' as cloud_firestore;
 import 'package:meta/meta.dart';
 import 'package:order_repository/src/models/models.dart';
 import 'package:order_repository/src/data_providers/data_providers.dart';
+
+class Event {}
 
 class OrderRepository {
   final OrderDataProvider _dataProvider;
@@ -29,6 +33,10 @@ class OrderRepository {
             toFirestore: (BookInOrder bookInOrder, options) =>
                 bookInOrder.toFirestore(),
           );
+
+  StreamController<Event> _streamController = StreamController<Event>();
+
+  Stream<Event> get stream => _streamController.stream;
 
   Future<void> createOrder(String uid) async {
     Order order = Order(uid: uid, price: 0, status: OrderStatus.creating);
@@ -64,11 +72,13 @@ class OrderRepository {
 
     if (bookInOrderId == null) {
       await bookInOrderCollection.add(bookInOrder);
+      _streamController.add(Event());
       return;
     }
     await bookInOrderCollection
         .doc(bookInOrderId)
         .update({'count': cloud_firestore.FieldValue.increment(1)});
+    _streamController.add(Event());
   }
 
   Future<Map<String, BookInOrder>> getBooksInCreatingOrder() async {
@@ -109,6 +119,7 @@ class OrderRepository {
       },
     );
     await _dataProvider.deleteOrderId();
+    _streamController.add(Event());
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {

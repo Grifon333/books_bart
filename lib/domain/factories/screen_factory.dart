@@ -32,7 +32,6 @@ import 'package:provider/provider.dart';
 class ScreenFactory {
   final MainNavigation _mainNavigation = MainNavigation();
   final BookRepository _bookRepository = BookRepository();
-  final OrderRepository _orderRepository = OrderRepository();
 
   Widget makeHome() {
     return ChangeNotifierProvider(
@@ -50,6 +49,7 @@ class ScreenFactory {
         context,
         bookRepository: _bookRepository,
         authenticationRepository: context.read<AuthenticationRepository>(),
+        screenFactory: this,
       ),
       child: const FavoriteBooksWidget(),
     );
@@ -68,7 +68,7 @@ class ScreenFactory {
         context,
         bookId,
         bookRepository: _bookRepository,
-        orderRepository: _orderRepository,
+        orderRepository: context.read<OrderRepository>(),
         authenticationRepository: context.read<AuthenticationRepository>(),
       ),
       child: const BookDetailsWidget(),
@@ -78,17 +78,16 @@ class ScreenFactory {
   Widget makeBottomNavigationBar() {
     return ChangeNotifierProvider(
       lazy: false,
-      create: (context) => BottomNavigationBarViewModel(
-        context,
-        authenticationRepository: context.read<AuthenticationRepository>(),
-      ),
+      create: (context) => BottomNavigationBarViewModel(context,
+          authenticationRepository: context.read<AuthenticationRepository>(),
+          screenFactory: this),
       child: const BottomNavigationBarWidget(),
     );
   }
 
   Widget makeSideBar() {
     return ChangeNotifierProvider(
-      create: (context) => SideBarViewModel(context),
+      create: (context) => SideBarViewModel(context, screenFactory: this),
       child: const SideBarWidget(),
     );
   }
@@ -97,8 +96,9 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => CartViewModel(
         context,
-        orderRepository: _orderRepository,
+        orderRepository: context.read<OrderRepository>(),
         bookRepository: _bookRepository,
+        screenFactory: this,
       ),
       child: const CartWidget(),
     );
@@ -108,7 +108,7 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => OrderViewModel(
         context,
-        orderRepository: _orderRepository,
+        orderRepository: context.read<OrderRepository>(),
         bookRepository: _bookRepository,
       ),
       child: const OrderWidget(),
@@ -163,7 +163,7 @@ class ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => HistoryViewModel(
         context,
-        orderRepository: _orderRepository,
+        orderRepository: context.read<OrderRepository>(),
         bookRepository: _bookRepository,
         authenticationRepository: context.read<AuthenticationRepository>(),
       ),

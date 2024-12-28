@@ -15,7 +15,7 @@ class BottomNavigationState {
 class BottomNavigationBarViewModel extends ChangeNotifier {
   final BuildContext context;
   final BottomNavigationState _state = BottomNavigationState();
-  final ScreenFactory _screenFactory = ScreenFactory();
+  final ScreenFactory _screenFactory;
   final AuthenticationRepository _authenticationRepository;
 
   BottomNavigationState get state => _state;
@@ -23,7 +23,9 @@ class BottomNavigationBarViewModel extends ChangeNotifier {
   BottomNavigationBarViewModel(
     this.context, {
     required AuthenticationRepository authenticationRepository,
-  }) : _authenticationRepository = authenticationRepository {
+    required ScreenFactory screenFactory,
+  })  : _authenticationRepository = authenticationRepository,
+        _screenFactory = screenFactory {
     _init();
   }
 

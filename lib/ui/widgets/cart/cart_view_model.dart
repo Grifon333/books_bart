@@ -1,9 +1,9 @@
-import 'package:books_bart/domain/entity/book.dart';
+import 'dart:async';
 
+import 'package:books_bart/domain/entity/book.dart';
 import 'package:books_bart/domain/entity/variant_of_book.dart';
 import 'package:books_bart/domain/factories/screen_factory.dart';
 import 'package:books_bart/domain/repositories/book_repository.dart';
-
 import 'package:flutter/material.dart';
 import 'package:order_repository/order_repository.dart';
 
@@ -16,20 +16,31 @@ class CartViewModel extends ChangeNotifier {
   final CartState _state = CartState();
   final OrderRepository _orderRepository;
   final BookRepository _bookRepository;
-  final ScreenFactory _screenFactory = ScreenFactory();
+  final ScreenFactory _screenFactory;
 
   CartState get state => _state;
+
+  late final StreamSubscription<Event> _subscription;
 
   CartViewModel(
     this.context, {
     required OrderRepository orderRepository,
     required BookRepository bookRepository,
+    required ScreenFactory screenFactory,
   })  : _orderRepository = orderRepository,
-        _bookRepository = bookRepository {
+        _bookRepository = bookRepository,
+        _screenFactory = screenFactory {
     _init();
   }
 
   Future<void> _init() async {
+    await _updateBooksInfo();
+    _subscription = _orderRepository.stream.listen(
+      (_) async => await _updateBooksInfo(),
+    );
+  }
+
+  Future<void> _updateBooksInfo() async {
     _state.booksInfo.clear();
     Map<String, BookInOrder> booksInOrder =
         await _orderRepository.getBooksInCreatingOrder();
@@ -101,7 +112,7 @@ class CartViewModel extends ChangeNotifier {
   }
 
   Future<void> onRefresh() async {
-    await _init();
+    await _updateBooksInfo();
   }
 
   void onTapCartBookInfo(int index) {
@@ -110,6 +121,12 @@ class CartViewModel extends ChangeNotifier {
         _state.booksInfo[index].bookId,
       ),
     ));
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
 

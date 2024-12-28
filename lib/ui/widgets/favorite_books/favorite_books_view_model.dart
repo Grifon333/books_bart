@@ -13,7 +13,7 @@ class FavoriteBooksViewModel extends ChangeNotifier {
   final FavoriteBooksState _state = FavoriteBooksState();
   final BookRepository _bookRepository;
   final AuthenticationRepository _authenticationRepository;
-  final ScreenFactory _screenFactory = ScreenFactory();
+  final ScreenFactory _screenFactory;
 
   FavoriteBooksState get state => _state;
 
@@ -22,8 +22,10 @@ class FavoriteBooksViewModel extends ChangeNotifier {
     required,
     required BookRepository bookRepository,
     required AuthenticationRepository authenticationRepository,
+    required ScreenFactory screenFactory,
   })  : _bookRepository = bookRepository,
-        _authenticationRepository = authenticationRepository {
+        _authenticationRepository = authenticationRepository,
+        _screenFactory = screenFactory {
     _init();
   }
 

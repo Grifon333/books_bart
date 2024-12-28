@@ -5,6 +5,7 @@ import 'package:books_bart/ui/widgets/app/app.dart';
 import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:order_repository/order_repository.dart';
 
 class App extends StatelessWidget {
   final AuthenticationRepository _authenticationRepository;
@@ -16,8 +17,13 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider.value(
-      value: _authenticationRepository,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthenticationRepository>(
+          create: (_) => _authenticationRepository,
+        ),
+        RepositoryProvider<OrderRepository>(create: (_) => OrderRepository()),
+      ],
       child: BlocProvider(
         lazy: false,
         create: (context) => AppBloc(
@@ -32,6 +38,7 @@ class App extends StatelessWidget {
 class AppView extends StatelessWidget {
   static final _mainNavigation = MainNavigation();
   static final _mainTheme = MainTheme();
+
   const AppView({super.key});
 
   @override
